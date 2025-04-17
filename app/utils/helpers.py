@@ -36,20 +36,3 @@ def format_timestamp(timestamp: str) -> str:
     except Exception as e:
         logger.error(f"Error formatting timestamp: {str(e)}")
         return timestamp
-
-def validate_environment_variables() -> bool:
-    """Validate that all required environment variables are set."""
-    required_vars = [
-        "SLACK_BOT_TOKEN",
-        "SLACK_SIGNING_SECRET",
-        "AZURE_SEARCH_ENDPOINT",
-        "AZURE_SEARCH_KEY",
-        "AZURE_OPENAI_ENDPOINT",
-        "AZURE_OPENAI_KEY"
-    ]
-    
-    missing_vars = [var for var in required_vars if not os.getenv(var)]
-    if missing_vars:
-        logger.error(f"Missing required environment variables: {', '.join(missing_vars)}")
-        return False
-    return True 

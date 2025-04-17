@@ -1,51 +1,63 @@
-from azure.core.credentials import AzureKeyCredential
-from azure.search.documents import SearchClient
-from azure.search.documents.models import Vector
-import os
 import logging
 from typing import List, Dict, Any
 
 logger = logging.getLogger(__name__)
 
+# Mock runbook data
+MOCK_RUNBOOKS = [
+    {
+        "id": "rb-001",
+        "title": "Database Connection Timeout",
+        "content": "1. Check database connection pool\n2. Verify network connectivity\n3. Restart database service",
+        "category": "Database",
+        "severity": "high",
+        "tags": ["database", "connection", "timeout"]
+    },
+    {
+        "id": "rb-002",
+        "title": "API Rate Limit Exceeded",
+        "content": "1. Check current rate limits\n2. Verify API key usage\n3. Implement rate limiting\n4. Contact API provider if needed",
+        "category": "API",
+        "severity": "medium",
+        "tags": ["api", "rate-limit", "throttling"]
+    },
+    {
+        "id": "rb-003",
+        "title": "Memory Leak in Application",
+        "content": "1. Monitor memory usage\n2. Check for memory leaks in code\n3. Review recent code changes\n4. Restart affected services",
+        "category": "Application",
+        "severity": "critical",
+        "tags": ["memory", "performance", "application"]
+    }
+]
+
 class RunbookSearch:
     def __init__(self):
-        self.endpoint = os.getenv("AZURE_SEARCH_ENDPOINT")
-        self.key = os.getenv("AZURE_SEARCH_KEY")
-        self.index_name = "runbooks"
-        self.credential = AzureKeyCredential(self.key)
-        self.search_client = SearchClient(
-            endpoint=self.endpoint,
-            index_name=self.index_name,
-            credential=self.credential
-        )
-
-    async def search_runbooks(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
-        """Search for relevant runbooks using semantic search."""
+        logger.info("Initializing RunbookSearch")
+    
+    def search_runbooks(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
+        """Search for relevant runbooks using keyword matching."""
         try:
-            # Convert query to vector (placeholder - implement actual vectorization)
-            vector = self._get_query_vector(query)
+            # Remove "PagerDuty:" prefix if present
+            query = query.replace("PagerDuty:", "").strip()
+            query_lower = query.lower()
             
-            # Perform vector search
-            results = self.search_client.search(
-                search_text=query,
-                vector=vector,
-                top=top_k,
-                select=["title", "content", "category", "severity"]
-            )
+            results = []
+            for runbook in MOCK_RUNBOOKS:
+                # Check if query matches any part of the runbook
+                if (query_lower in runbook["title"].lower() or
+                    query_lower in runbook["content"].lower() or
+                    query_lower in runbook["category"].lower() or
+                    any(query_lower in tag.lower() for tag in runbook["tags"])):
+                    results.append(runbook)
+                    if len(results) >= top_k:
+                        break
             
-            return [result for result in results]
+            logger.info(f"Search found {len(results)} results for query: {query}")
+            return results
         except Exception as e:
             logger.error(f"Error searching runbooks: {str(e)}")
             raise
-
-    def _get_query_vector(self, query: str) -> Vector:
-        """Convert query text to vector representation."""
-        # TODO: Implement actual vectorization using Azure OpenAI
-        # This is a placeholder implementation
-        return Vector(
-            value=[0.1] * 1536,  # Assuming 1536-dimensional vectors
-            fields="content_vector"
-        )
 
     def format_runbook_response(self, runbook: Dict[str, Any]) -> str:
         """Format runbook content for Slack response."""

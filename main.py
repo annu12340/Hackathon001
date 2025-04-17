@@ -19,7 +19,7 @@ app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 runbook_search = RunbookSearch()
 
 @app.event("message")
-async def handle_message(event, say):
+def handle_message(event, say):
     """Handle incoming messages and process PagerDuty alerts."""
     try:
         # Skip if the message is from a bot
@@ -34,17 +34,17 @@ async def handle_message(event, say):
         # Check if this is a PagerDuty alert
         if "PagerDuty" in text:
             # Search for relevant runbooks
-            runbooks = await runbook_search.search_runbooks(text)
+            runbooks = runbook_search.search_runbooks(text)
             
             if runbooks:
                 # Format and send the response
                 response = runbook_search.format_runbook_response(runbooks[0])
-                await say(text=response, thread_ts=thread_ts)
+                say(text=response, thread_ts=thread_ts)
             else:
-                await say(text="No relevant runbook found for this alert.", thread_ts=thread_ts)
+                say(text="No relevant runbook found for this alert.", thread_ts=thread_ts)
     except Exception as e:
         logger.error(f"Error processing message: {str(e)}")
-        await say(text=f"Error processing alert: {str(e)}", thread_ts=thread_ts)
+        say(text=f"Error processing alert: {str(e)}", thread_ts=thread_ts)
 
 if __name__ == "__main__":
     handler = SocketModeHandler(app_token=os.environ.get("SLACK_APP_TOKEN"), app=app)
