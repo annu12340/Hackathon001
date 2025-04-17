@@ -1,0 +1,9 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+python-dotenv==1.0.0
+slack-sdk==3.26.1
+azure-ai-textanalytics==5.3.0
+azure-search-documents==11.4.0b11
+langchain==0.0.350
+python-jose==3.3.0
+pydantic==2.5.2 
