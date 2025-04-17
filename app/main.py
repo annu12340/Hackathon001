@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
 import os
 import logging
+from slack_bolt import App
+from slack_bolt.adapter.socket_mode import SocketModeHandler
+from dotenv import load_dotenv
+from app.azure.search import RunbookSearch
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -11,42 +12,52 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-app = FastAPI(title="Automated Incident Resolution System")
+# Initialize Slack app
+app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
 
-# Configure CORS
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Initialize Azure search
+runbook_search = RunbookSearch()
 
-@app.get("/")
-async def root():
-    """Root endpoint to verify the application is running."""
-    return {"status": "ok", "message": "Automated Incident Resolution System is running"}
-
-@app.post("/slack/events")
-async def slack_events(request: Request):
-    """Handle incoming Slack events and PagerDuty alerts."""
+@app.event("message")
+def handle_message(event, say):
+    """Handle incoming messages and process PagerDuty alerts."""
     try:
-        # TODO: Implement Slack event handling
-        return {"status": "ok"}
-    except Exception as e:
-        logger.error(f"Error processing Slack event: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        # Skip if the message is from a bot
+        if event.get("subtype") == "bot_message":
+            return
 
-@app.post("/slack/commands")
-async def slack_commands(request: Request):
-    """Handle Slack slash commands."""
-    try:
-        # TODO: Implement Slack command handling
-        return {"status": "ok"}
-    except Exception as e:
-        logger.error(f"Error processing Slack command: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        # Get message text
+        text = event.get("text", "")
+        channel = event.get("channel")
+        thread_ts = event.get("thread_ts")
 
+        # Check if this is a PagerDuty alert
+        if "PagerDuty" in text:
+            # Search for relevant runbooks
+            runbooks = runbook_search.search_runbooks(text)
+            
+            if runbooks:
+                # Format and send the response
+                response = format_runbook_response(runbooks[0])
+                say(text=response, thread_ts=thread_ts)
+            else:
+                say(text="No relevant runbook found for this alert.", thread_ts=thread_ts)
+    except Exception as e:
+        logger.error(f"Error processing message: {str(e)}")
+        say(text=f"Error processing alert: {str(e)}", thread_ts=thread_ts)
+
+def format_runbook_response(runbook):
+    """Format runbook content for Slack response."""
+    return f"""
+*{runbook['title']}*
+Category: {runbook['category']}
+Severity: {runbook['severity']}
+
+{runbook['content']}
+"""
+
+# Start the app
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000) 
+    # Initialize socket mode handler
+    handler = SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"])
+    handler.start() 
