@@ -1,5 +1,6 @@
 Flow of events
 
+```
 Start
   ↓
 Initialize Bot
@@ -37,3 +38,4 @@ Check Results
   └── Not Found → Send "No Results" Message
   ↓
 End
+```
