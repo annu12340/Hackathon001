@@ -66,7 +66,9 @@ def handle_message(event, say):
                         response.append(f"*Platform: {platform}*")
                         for step in platform_results["steps_results"]:
                             status = "✅" if step["status"] == "success" else "❌"
+                            output = step["output"]
                             response.append(f"{status} `{step['step']}`")
+                            response.append(f"Output: \n ```{output[:100]}```")
                         response.append("")
                     
                     say(text="\n".join(response), thread_ts=thread_ts)

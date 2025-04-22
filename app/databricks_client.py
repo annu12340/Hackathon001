@@ -47,7 +47,7 @@ class DatabricksTriageClient:
         if node_id.startswith("k8s"):
             return {
                 "k8s": [
-                    "kubectl get pods",
+                    "kubectl get nodes",
                     "kubectl describe pod problem-pod",
                     "kubectl logs problem-pod",
                     "systemctl status kubelet",
@@ -77,7 +77,7 @@ class DatabricksTriageClient:
             # Default case
             return {
                 "k8s": [
-                    "kubectl get pods --all-namespaces",
+                    "kubectl get nodes --all-namespaces",
                     "systemctl status kubelet"
                 ]
             }
@@ -88,8 +88,8 @@ class DatabricksTriageClient:
             # Mock triage steps
             return {
                 "k8s": [
-                    "kubectl get pods -n default",
-                    "kubectl describe node " + node_id,
+                    "kubectl get nodes -n default",
+                    "kubectl get node " + node_id,
                     "kubectl logs -n default -l app=nginx"
                 ],
                 "databricks": [

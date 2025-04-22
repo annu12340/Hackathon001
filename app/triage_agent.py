@@ -60,6 +60,7 @@ class TriageAgent:
                     process.communicate(),
                     timeout=self.COMMAND_TIMEOUT
                 )
+                
             except asyncio.TimeoutError:
                 # Kill the process if it times out
                 process.kill()
@@ -68,6 +69,7 @@ class TriageAgent:
             # Decode output
             stdout_str = stdout.decode('utf-8').strip()
             stderr_str = stderr.decode('utf-8').strip()
+            print(f"Command executed : {command} with output: {stdout_str} and error: {stderr_str}")
             
             # Check return code
             success = process.returncode == 0
