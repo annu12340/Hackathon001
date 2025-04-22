@@ -32,6 +32,21 @@ class SlackBot:
             
             node_id = "lima-rancher-desktop"
 
+            # Collect diagnostics
+            diagnostics = await self.log_collector.collect_all_diagnostics(host=node_id)
+            
+            # Format and send the report
+            report = self.log_collector.format_diagnostics_report(diagnostics)
+            
+            # Split report into chunks if it's too long for Slack
+            max_length = 3900  # Slack has a 4000 character limit
+            chunks = [report[i:i + max_length] for i in range(0, len(report), max_length)]
+            
+            for i, chunk in enumerate(chunks):
+                await say(
+                    text=f"```{chunk}```",
+                    thread_ts=thread_ts
+                )
             # Get triage steps and convert to proper format
             triage_steps = databricks_client.get_triage_steps(node_id)
             
