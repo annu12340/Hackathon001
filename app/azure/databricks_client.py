@@ -35,53 +35,7 @@ class DatabricksTriageClient:
             #     token=os.getenv("DATABRICKS_TOKEN")
             # )
     
-    async def _get_mock_triage_steps(self, node_id: str) -> Dict[str, List[str]]:
-        """
-        Generate mock triage steps based on node type.
-        This is a placeholder implementation that returns predefined steps.
-        """
-        # Simulate API latency
-        await asyncio.sleep(1)
-        
-        # Mock different scenarios based on node_id prefix
-        if node_id.startswith("k8s"):
-            return {
-                "k8s": [
-                    "kubectl get nodes",
-                    "kubectl describe pod problem-pod",
-                    "kubectl logs problem-pod",
-                    "systemctl status kubelet",
-                    "journalctl -u kubelet"
-                ]
-            }
-        elif node_id.startswith("db"):
-            return {
-                "databricks": [
-                    "databricks clusters list",
-                    "databricks fs ls dbfs:/problems",
-                    "curl -X GET https://your-workspace/api/2.0/clusters/list"
-                ]
-            }
-        elif node_id.startswith("multi"):
-            return {
-                "k8s": [
-                    "kubectl get nodes",
-                    "kubectl describe node problem-node"
-                ],
-                "databricks": [
-                    "databricks clusters list",
-                    "databricks jobs list"
-                ]
-            }
-        else:
-            # Default case
-            return {
-                "k8s": [
-                    "kubectl get nodes --all-namespaces",
-                    "systemctl status kubelet"
-                ]
-            }
-    
+
     def get_triage_steps(self, node_id: str) -> Dict[str, List[str]]:
         """Get triage steps for a specific node."""
         if self.use_mock:
