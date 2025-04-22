@@ -39,13 +39,14 @@ def handle_message(event, say):
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
             try:
+                # TODO: Extract node ID from the alert
                 # Extract node ID from the alert (example: k8s-node-001)
-                node_id = "k8s-node-001"  # This should be extracted from the actual alert
+                node_id = "lima-rancher-desktop"  # This should be extracted from the actual alert
                 
-                # Get triage steps
+                # Get triage steps (synchronous call)
                 triage_steps = databricks_client.get_triage_steps(node_id)
                 
-                # Execute triage steps
+                # Execute triage steps (async call)
                 results = loop.run_until_complete(triage_agent.orchestrate_triage(triage_steps))
                 
                 # Format response

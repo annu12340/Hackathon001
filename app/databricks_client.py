@@ -26,8 +26,9 @@ class MockDatabricksResponse:
         return self.json.get(key)
 
 class DatabricksTriageClient:
-    def __init__(self, use_mock: bool = True):
+    def __init__(self, use_mock: bool = False):
         self.use_mock = use_mock
+        logger.info(f"Initialized DatabricksTriageClient with mock={use_mock}")
         # if not use_mock:
             # self.client = DatabricksAPI(
             #     host=os.getenv("DATABRICKS_HOST"),
@@ -81,7 +82,27 @@ class DatabricksTriageClient:
                 ]
             }
     
-    async def get_triage_steps(self, node_id: str) -> Dict[str, List[str]]:
+    def get_triage_steps(self, node_id: str) -> Dict[str, List[str]]:
+        """Get triage steps for a specific node."""
+        if self.use_mock:
+            # Mock triage steps
+            return {
+                "k8s": [
+                    "kubectl get pods -n default",
+                    "kubectl describe node " + node_id,
+                    "kubectl logs -n default -l app=nginx"
+                ],
+                "databricks": [
+                    "databricks clusters list",
+                    "databricks clusters get " + node_id,
+                    "databricks jobs list"
+                ],
+            }
+        else:
+            # Real implementation would go here
+            raise NotImplementedError("Real implementation not available")
+
+    async def get_triage_steps_async(self, node_id: str) -> Dict[str, List[str]]:
         """
         Fetch triage steps from Databricks for a specific node.
         If use_mock is True, returns mock data instead of making actual API calls.

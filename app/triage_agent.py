@@ -139,6 +139,8 @@ class TriageAgent:
                     }
                 }]
             }
+            
+            # Parse the mock response
             analysis = json.loads(mock_response["choices"][0]["message"]["content"])
             logger.info(f"Step analysis completed for {platform}", extra={"analysis": analysis})
             return analysis
@@ -162,7 +164,7 @@ class TriageAgent:
             analysis = await self.analyze_triage_steps(platform, [step])
             
             # If risk is too high, require manual approval
-            if analysis.get("risk_level", "low") == "high":
+            if analysis.get("risk_level") == "high":
                 return {
                     "status": "pending_approval",
                     "message": "High-risk command requires manual approval",
@@ -175,11 +177,13 @@ class TriageAgent:
             success, output, error = await self._execute_command(step)
             
             if success:
+                print(f"Step executed successfully: {step} with output: {output}")
                 return {
                     "status": "success",
                     "message": "Step executed successfully",
                     "step": step,
                     "output": output,
+                    "error": error,
                     "analysis": analysis
                 }
             else:
