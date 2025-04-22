@@ -10,5 +10,4 @@ async def main():
     await bot.start()
 
 if __name__ == "__main__":
-    # Run the async main function using asyncio.run()
     asyncio.run(main()) 

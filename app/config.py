@@ -9,10 +9,10 @@ SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
 SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN")
 
 # Command execution settings
-COMMAND_TIMEOUT = 300  # 5 minutes
+COMMAND_TIMEOUT = 300  
 
 # Allowed commands per platform
 ALLOWED_COMMANDS = {
     "k8s": ["systemctl", "kubectl", "journalctl"],
-    "databricks": ["databricks", "curl"]
+    "linux": ["echo", "curl"]
 } 

@@ -40,17 +40,15 @@ class DatabricksTriageClient:
         """Get triage steps for a specific node."""
         if self.use_mock:
             # Mock triage steps
-            return {
+            return    {
                 "k8s": [
-                    "kubectl get nodes -n default",
-                    "kubectl get node " + node_id,
-                    "kubectl logs -n default -l app=nginx"
+                    f"kubectl get node {node_id} -o wide",
+                    f"kubectl describe node {node_id}"
                 ],
-                "databricks": [
-                    "databricks clusters list",
-                    "databricks clusters get " + node_id,
-                    "databricks jobs list"
-                ],
+                "system": [
+                    "systemctl status kubelet",
+                    "journalctl -u kubelet -n 50"
+                ]
             }
         else:
             # Real implementation would go here
