@@ -89,7 +89,6 @@ class LogCollector:
             "network": "netstat -tuln",
             "docker_status": "systemctl status docker",
             "kubelet_status": "systemctl status kubelet",
-            "rancher_status": "rdctl version"
         }
         
         system_info = {}

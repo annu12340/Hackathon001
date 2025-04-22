@@ -49,13 +49,13 @@ class SlackBot:
                     thread_ts=thread_ts
                 )
             # Get triage steps and convert to proper format
-            # triage_steps = databricks_client.get_triage_steps(node_id)
+            triage_steps = databricks_client.get_triage_steps(node_id)
             
 
-            # # Run triage steps
-            # results = await self.triage_service.orchestrate_triage(triage_steps)
+            # Run triage steps
+            results = await self.triage_service.orchestrate_triage(triage_steps)
             
-            # await self.send_results(results, node_id, thread_ts, say)
+            await self.send_results(results, node_id, thread_ts, say)
             
         except Exception as e:
             logger.error(f"Error handling alert: {e}")
