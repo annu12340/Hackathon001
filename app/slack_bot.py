@@ -3,8 +3,8 @@ from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 from . import config
 from .triage import TriageService
-from app.azure.databricks_client import DatabricksTriageClient
-
+from .azure.databricks_client import DatabricksTriageClient
+from .utils.log_collector import LogCollector
 logger = logging.getLogger(__name__)
 databricks_client = DatabricksTriageClient(use_mock=True)
 
@@ -12,6 +12,7 @@ class SlackBot:
     def __init__(self):
         self.app = AsyncApp(token=config.SLACK_BOT_TOKEN)
         self.triage_service = TriageService()
+        self.log_collector = LogCollector()
         self.setup_handlers()
 
     def setup_handlers(self):
@@ -48,13 +49,13 @@ class SlackBot:
                     thread_ts=thread_ts
                 )
             # Get triage steps and convert to proper format
-            triage_steps = databricks_client.get_triage_steps(node_id)
+            # triage_steps = databricks_client.get_triage_steps(node_id)
             
 
-            # Run triage steps
-            results = await self.triage_service.orchestrate_triage(triage_steps)
+            # # Run triage steps
+            # results = await self.triage_service.orchestrate_triage(triage_steps)
             
-            await self.send_results(results, node_id, thread_ts, say)
+            # await self.send_results(results, node_id, thread_ts, say)
             
         except Exception as e:
             logger.error(f"Error handling alert: {e}")
