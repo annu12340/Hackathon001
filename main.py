@@ -1,9 +1,11 @@
 import os
 import logging
+import asyncio
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
 from dotenv import load_dotenv
-from app.azure.search import RunbookSearch
+from app.triage_agent import TriageAgent
+from app.databricks_client import DatabricksTriageClient
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -12,11 +14,10 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-# Initialize Slack app
+# Initialize components
 app = App(token=os.environ.get("SLACK_BOT_TOKEN"))
-
-# Initialize Azure search
-runbook_search = RunbookSearch()
+triage_agent = TriageAgent()
+databricks_client = DatabricksTriageClient(use_mock=True)
 
 @app.event("message")
 def handle_message(event, say):
@@ -28,20 +29,51 @@ def handle_message(event, say):
 
         # Get message text
         text = event.get("text", "")
-        channel = event.get("channel")
-        thread_ts = event.get("thread_ts")
+        thread_ts = event.get("thread_ts", event.get("ts"))
 
         # Check if this is a PagerDuty alert
         if "PagerDuty" in text:
-            # Search for relevant runbooks
-            runbooks = runbook_search.search_runbooks(text)
+            say(text="🔍 Analyzing alert and fetching runbook steps...", thread_ts=thread_ts)
             
-            if runbooks:
-                # Format and send the response
-                response = runbook_search.format_runbook_response(runbooks[0])
-                say(text=response, thread_ts=thread_ts)
-            else:
-                say(text="No relevant runbook found for this alert.", thread_ts=thread_ts)
+            # Create event loop for async operations
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            try:
+                # Extract node ID from the alert (example: k8s-node-001)
+                node_id = "k8s-node-001"  # This should be extracted from the actual alert
+                
+                # Get triage steps
+                triage_steps = databricks_client.get_triage_steps(node_id)
+                
+                # Execute triage steps
+                results = loop.run_until_complete(triage_agent.orchestrate_triage(triage_steps))
+                
+                # Format response
+                if results:
+                    success_count = sum(1 for platform in results.values() 
+                                      for step in platform["steps_results"] 
+                                      if step["status"] == "success")
+                    total_steps = sum(len(platform["steps_results"]) for platform in results.values())
+                    
+                    response = [
+                        f"*Triage Results for `{node_id}`*",
+                        f"Success Rate: {success_count}/{total_steps}",
+                        ""
+                    ]
+                    
+                    for platform, platform_results in results.items():
+                        response.append(f"*Platform: {platform}*")
+                        for step in platform_results["steps_results"]:
+                            status = "✅" if step["status"] == "success" else "❌"
+                            response.append(f"{status} `{step['step']}`")
+                        response.append("")
+                    
+                    say(text="\n".join(response), thread_ts=thread_ts)
+                else:
+                    say(text="No triage steps found for this alert.", thread_ts=thread_ts)
+            finally:
+                loop.close()
+
     except Exception as e:
         logger.error(f"Error processing message: {str(e)}")
         say(text=f"Error processing alert: {str(e)}", thread_ts=thread_ts)

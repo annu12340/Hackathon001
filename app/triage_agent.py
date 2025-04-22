@@ -21,11 +21,11 @@ class TriageAgent:
     def __init__(self):
         # Initialize Azure OpenAI client
         self.credential = DefaultAzureCredential()
-        self.openai_client = openai.AzureOpenAI(
-            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            api_version="2024-02-15-preview"
-        )
+        # self.openai_client = openai.AzureOpenAI(
+        #     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+        #     api_key=os.getenv("AZURE_OPENAI_API_KEY"),
+        #     api_version="2024-02-15-preview"
+        # )
         
         # Safety configurations
         self.ALLOWED_COMMANDS = {
@@ -106,13 +106,40 @@ class TriageAgent:
             Format the response as JSON.
             """
             
-            response = await self.openai_client.chat.completions.create(
-                model="gpt-4",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.2
-            )
-            
-            analysis = json.loads(response.choices[0].message.content)
+            # response = await self.openai_client.chat.completions.create(
+            #     model="gpt-4",
+            #     messages=[{"role": "user", "content": prompt}],
+            #     temperature=0.2
+            # )   
+            mock_response = {
+                "choices": [{
+                    "message": {
+                        "content": """{
+                            "risk_assessment": {
+                                "step1": {"risk": "low", "impact": "minimal"},
+                                "step2": {"risk": "medium", "impact": "moderate"},
+                                "step3": {"risk": "low", "impact": "minimal"}
+                            },
+                            "expected_outcomes": {
+                                "step1": "Service status check completed",
+                                "step2": "Logs analyzed for errors",
+                                "step3": "Configuration verified"
+                            },
+                            "failure_scenarios": {
+                                "step1": "Service not responding",
+                                "step2": "Logs inaccessible",
+                                "step3": "Configuration mismatch"
+                            },
+                            "recovery_steps": {
+                                "step1": "Retry service check",
+                                "step2": "Check log permissions",
+                                "step3": "Verify configuration backup"
+                            }
+                        }"""
+                    }
+                }]
+            }
+            analysis = json.loads(mock_response["choices"][0]["message"]["content"])
             logger.info(f"Step analysis completed for {platform}", extra={"analysis": analysis})
             return analysis
             

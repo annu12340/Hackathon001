@@ -2,7 +2,7 @@ import os
 import logging
 import asyncio
 from typing import Dict, List
-from databricks_api import DatabricksAPI
+# from databricks_api import DatabricksAPI
 from pythonjsonlogger import jsonlogger
 
 # Configure logging
@@ -28,11 +28,11 @@ class MockDatabricksResponse:
 class DatabricksTriageClient:
     def __init__(self, use_mock: bool = True):
         self.use_mock = use_mock
-        if not use_mock:
-            self.client = DatabricksAPI(
-                host=os.getenv("DATABRICKS_HOST"),
-                token=os.getenv("DATABRICKS_TOKEN")
-            )
+        # if not use_mock:
+            # self.client = DatabricksAPI(
+            #     host=os.getenv("DATABRICKS_HOST"),
+            #     token=os.getenv("DATABRICKS_TOKEN")
+            # )
     
     async def _get_mock_triage_steps(self, node_id: str) -> Dict[str, List[str]]:
         """
