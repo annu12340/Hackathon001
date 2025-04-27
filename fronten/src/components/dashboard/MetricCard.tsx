@@ -74,7 +74,7 @@ const MetricCard = ({
       <Progress value={value} className={cn("h-2 bg-gray-100", value >= 80 ? "animate-pulse-gentle" : "")} />
       
       {description && (
-        <p className="text-xs text-gray-500 mt-3">{description}</p>
+        <p className="text-xs text-gray-500 mt-3">TESTING 134{description}</p>
       )}
     </div>
   );
