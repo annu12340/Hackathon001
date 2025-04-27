@@ -45,7 +45,6 @@
       "assignedTo": "a j"
     },
     "aiGeneratedData": {
-      "alertSummary": "The system is experiencing high memory usage due to a memory leak in the API Gateway component. The error is critical and requires immediate attention.",
       "confidence": "High",
       "environment": "Production",
       "cluster": "us-west-cluster-01",
@@ -55,8 +54,58 @@
       "impactedComponent": "API Gateway",
       "componentVersion": "v2.3.1",
       "firstDetected": "2025-04-27 07:42:18 UTC"
-    }
-
+    },
+    "metrics": [
+      {
+        "title": "CPU Usage",
+        "value": 68,
+        "icon": "Cpu",
+        "trend": "up",
+        "color": "blue",
+        "suffix": "%",
+        "description": "Average CPU utilization across all services"
+      },
+      {
+        "title": "Memory Usage",
+        "value": 82,
+        "icon": "Activity",
+        "trend": "up",
+        "color": "yellow",
+        "suffix": "%",
+        "description": "Current memory usage across all nodes"
+      },
+      {
+        "title": "Database Connections",
+        "value": 243,
+        "icon": "Database",
+        "trend": "neutral",
+        "color": "green",
+        "suffix": "",
+        "description": "Active database connections"
+      }
+    ],
+    "recentActivity": [
+      {
+        "time": "10:45 AM",
+        "event": "High memory usage alert triggered",
+        "severity": "warning"
+      },
+      {
+        "time": "10:30 AM",
+        "event": "Database connection pool expanded",
+        "severity": "info"
+      },
+      {
+        "time": "10:15 AM",
+        "event": "API Gateway restarted successfully",
+        "severity": "success"
+      },
+      {
+        "time": "10:05 AM",
+        "event": "Service authentication failure",
+        "severity": "error"
+      }
+    ]
   },
   "rootCauseSteps": [
     {

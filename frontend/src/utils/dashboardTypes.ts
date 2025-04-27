@@ -33,11 +33,25 @@ export interface AlertDetails {
   assignedTo: string;
 }
 
+export interface AiGeneratedData {
+  confidence: string;
+  environment: string;
+  cluster: string;
+  nodeName: string;
+  errorType: string;
+  errorSeverity: string;
+  impactedComponent: string;
+  componentVersion: string;
+  firstDetected: string;
+  alertSummary?: string;
+}
+
 export interface Overview {
   title: string;
   metrics: Metric[];
   recentActivity: Activity[];
   alertDetails: AlertDetails;
+  aiGeneratedData?: AiGeneratedData;
 }
 
 export interface RootCauseStep {
