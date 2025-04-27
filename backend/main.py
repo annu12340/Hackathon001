@@ -7,6 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 async def main():
     bot = SlackBot()
+    print("botbotbot",bot)
     await bot.start()
 
 if __name__ == "__main__":
