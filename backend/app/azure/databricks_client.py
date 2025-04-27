@@ -3,13 +3,12 @@ import logging
 import asyncio
 from typing import Dict, List
 # from databricks_api import DatabricksAPI
-from pythonjsonlogger import jsonlogger
+# from pythonjsonlogger import jsonlogger
 
 # Configure logging
 logger = logging.getLogger(__name__)
 logHandler = logging.StreamHandler()
-formatter = jsonlogger.JsonFormatter()
-logHandler.setFormatter(formatter)
+
 logger.addHandler(logHandler)
 logger.setLevel(logging.INFO)
 

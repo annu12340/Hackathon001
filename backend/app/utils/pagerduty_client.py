@@ -35,72 +35,30 @@ class PagerDutyClient:
             response = requests.get(url, headers=self.headers)
             
             if response.status_code == 200:
-                return response.json()["incident"]
+                incident = response.json()["incident"]
+                print("incidentincidentincident",incident)
+                return incident
             else:
                 logger.error(f"Failed to get incident {incident_id}: {response.status_code} {response.text}")
                 return None
         except Exception as e:
             logger.exception(f"Error getting incident {incident_id}: {str(e)}")
             return None
-    
-    def format_incident_details(self, incident):
+        
+    def format_incident_details(self, summary):
         """
-        Format incident details into a readable message
-        
-        Args:
-            incident (dict): The incident details from PagerDuty
-            
-        Returns:
-            str: Formatted incident details
+        Format the incident summary dict into a Slack-friendly message.
         """
-        if not incident:
-            return "❌ Could not retrieve incident details"
-        
-        # Extract useful fields
-        id = incident.get("id", "Unknown")
-        title = incident.get("title", "Unknown")
-        status = incident.get("status", "Unknown").upper()
-        urgency = incident.get("urgency", "Unknown").upper()
-        
-        # Format created and last updated times
-        created_at = incident.get("created_at")
-        last_updated = incident.get("last_status_change_at")
-        
-        if created_at:
-            created_at = datetime.fromisoformat(created_at.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S UTC")
-        else:
-            created_at = "Unknown"
-            
-        if last_updated:
-            last_updated = datetime.fromisoformat(last_updated.replace("Z", "+00:00")).strftime("%Y-%m-%d %H:%M:%S UTC")
-        else:
-            last_updated = "Unknown"
-            
-        # Get assignee information
-        assignees = incident.get("assignments", [])
-        assignee_text = "Unassigned"
-        if assignees:
-            assignee_names = [a.get("assignee", {}).get("summary", "Unknown") for a in assignees]
-            assignee_text = ", ".join(assignee_names)
-        
-        # Format incident details
-        incident_url = incident.get("html_url", "#")
-        service_name = incident.get("service", {}).get("summary", "Unknown")
-        
-        # Create formatted message for Slack
-        status_emoji = "🔴" if status == "TRIGGERED" else "🟡" if status == "ACKNOWLEDGED" else "🟢"
-        urgency_emoji = "🔥" if urgency == "HIGH" else "⚠️"
-        
-        formatted_message = [
-            f"*PagerDuty Incident {id}*",
-            f"{status_emoji} *Status:* {status}",
-            f"{urgency_emoji} *Urgency:* {urgency}",
-            f"*Title:* {title}",
-            f"*Service:* {service_name}",
-            f"*Created:* {created_at}",
-            f"*Last Updated:* {last_updated}",
-            f"*Assigned to:* {assignee_text}",
-            f"*Details:* <{incident_url}|View in PagerDuty>"
-        ]
-        
-        return "\n".join(formatted_message) 
+        print("Summary is", summary)
+        return (
+            f"*Status:* {summary.get('Status', 'N/A')}\n"
+            f"*Urgency:* {summary.get('Urgency', 'N/A')}\n"
+            f"*Title:* {summary.get('Title', 'N/A')}\n"
+            f"*Time (UTC):* {summary.get('Time_UTC', 'N/A')}\n"
+            f"*Summary of the Issue:* {summary.get('Summary_of_the_Issue', 'N/A')}\n"
+            f"*Environment/Cluster:* {summary.get('Environment_or_Cluster', 'N/A')}\n"
+            f"*Host/Node Name:* {summary.get('Host_or_Node_Name', 'N/A')}\n"
+            f"*Error Type:* {summary.get('Error_Type', 'N/A')}\n"
+            f"*Impacted Component:* {summary.get('Impacted_Component', 'N/A')}\n"
+            f"*Time:* {summary.get('Time', 'N/A')}"
+        )

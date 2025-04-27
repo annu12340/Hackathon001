@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import re
+import json
 from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 from . import config
@@ -8,10 +9,10 @@ from .triage import TriageService
 from .azure.databricks_client import DatabricksTriageClient
 from .utils.log_collector import LogCollector
 from .utils.pagerduty_client import PagerDutyClient
-
+from .azure.azure_openai import AzureOpenAIClient
 logger = logging.getLogger(__name__)
 databricks_client = DatabricksTriageClient(use_mock=True)
-
+azure_openai = AzureOpenAIClient()
 class SlackBot:
     def __init__(self):
         self.app = AsyncApp(token=config.SLACK_BOT_TOKEN)
@@ -34,10 +35,10 @@ class SlackBot:
             thread_ts = event.get("thread_ts", event.get("ts"))
  
             # # Check if this is a PagerDuty alert in Slack
-            if config.PAGERDUTY_URL in text:
-                print("PagerDuty alert detected. The text is",text)
-                await self.handle_alert(text, thread_ts, say)
-            
+            # if config.PAGERDUTY_URL in text:
+            #     print("PagerDuty alert detected. The text is",text)
+            #     await self.handle_alert(text, thread_ts, say)
+            await self.handle_alert(text, thread_ts, say)
             return
 
 
@@ -66,11 +67,12 @@ class SlackBot:
             channel = initial_message['channel']
 
             # Step 1: Check if this is a PagerDuty incident and get details if it is
-            incident_id = self.extract_incident_id(text)
+            # incident_id = self.extract_incident_id(text)
+            incident_id="Q3TAMBYDY6HQI4"
             if incident_id:
                 logger.info(f"Found PagerDuty incident ID: {incident_id}")
                 # Update status to indicate we're fetching PD details
-                await self.app.client.chat_update(
+                await self.app.client.chat_postMessage(
                     channel=channel,
                     ts=message_ts,
                     text=":loading-dot: Fetching PagerDuty incident details...",
@@ -78,12 +80,8 @@ class SlackBot:
                 )
                 
                 # Fetch incident details from PagerDuty API
-                incident = self.pd_client.get_incident(incident_id)
-                
-                if incident:
-                    # Format and send incident details
-                    details_message = self.pd_client.format_incident_details(incident)
-                    await say(text=details_message, thread_ts=thread_ts)
+                incident_dic = self.pd_client.get_incident(incident_id)
+
             
             # Step 2: Proceed with standard alert analysis
             await self.app.client.chat_update(
@@ -92,7 +90,17 @@ class SlackBot:
                 text=":loading-dot: Analyzing alert...",
                 thread_ts=thread_ts
             )
-            await asyncio.sleep(2)
+                            
+                
+            if incident_dic:
+                    # Format and send incident details
+                    summary=azure_openai.summarize_pagerduty_alert(incident_dic)
+                    details_message = self.pd_client.format_incident_details(summary)
+                    print("detailed message is",details_message)
+                    await say(text=details_message, thread_ts=thread_ts)
+            else:
+                return
+
             await self.update_status(channel, message_ts, steps_done=1, current_step="Analyzing alert", thread_ts=thread_ts)
 
             # Step 3: Get triage steps
