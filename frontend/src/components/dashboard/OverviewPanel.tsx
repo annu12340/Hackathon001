@@ -1,5 +1,4 @@
 import React from 'react';
-import MetricCard from './MetricCard';
 import { Cpu, Database, Activity, Clock, AlertCircle, Bell, Flame, Calendar, User, RefreshCw, Server, Globe, Box, Layers, AlertTriangle, Bot, Code, Sparkles, ExternalLink, FileText, PhoneCall } from 'lucide-react';
 import { Overview } from '@/utils/dashboardTypes';
 
