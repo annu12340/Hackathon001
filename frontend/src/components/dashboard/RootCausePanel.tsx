@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import RootCauseSteps from './RootCauseTree';
 import { Search, Filter, Clock, CheckCircle2, CircleDashed, Lightbulb, ArrowRight, Users } from 'lucide-react';
 import { RootCauseStep } from '@/utils/dashboardTypes';
 

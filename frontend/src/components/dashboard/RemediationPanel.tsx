@@ -1,12 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import RootCauseSteps from './RootCauseTree';
+import RemediationSteps, { Step } from './RemediationTree';
 import { Search, WrenchIcon, Lightbulb, CheckCircle, Filter, PlusCircle, ArrowRight, Terminal, GitBranch, RefreshCw, Shield } from 'lucide-react';
 import { useAlertData } from '@/context/AlertDataContext';
 
 const RemediationPanel = () => {
-  const { alertData, isLoading, error } = useAlertData();
+  const { alertData, isLoading, error, alertId } = useAlertData();
   const [filterActive, setFilterActive] = useState(false);
+  const [remediationSteps, setRemediationSteps] = useState<Step[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRemediationData = async () => {
+      try {
+        setLoading(true);
+        let response;
+        
+        // Use the same pattern as in AlertDataContext
+        if (!alertId) {
+          response = await fetch('/data/data.json');
+        } else {
+          response = await fetch(`/data/${alertId}/remediationSteps.json`);
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch remediation steps: ${response.status} ${response.statusText}`);
+        }
+        
+        const data = await response.json();
+        
+        // Check if there are remediation steps in the data
+        if (data.remediationSteps) {
+          setRemediationSteps(data.remediationSteps);
+        } else if (data.rootCauseSteps) {
+          // Fallback to rootCauseSteps if available
+          setRemediationSteps(data.rootCauseSteps);
+        } else {
+          console.warn('No remediation steps found in data');
+          setRemediationSteps([]);
+        }
+      } catch (error) {
+        console.error('Error fetching remediation steps:', error);
+        // If alertData is available and has rootCauseSteps, use those as fallback
+        if (alertData && alertData.rootCauseSteps) {
+          setRemediationSteps(alertData.rootCauseSteps);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRemediationData();
+  }, [alertId, alertData]);
 
   // If we're loading or have an error, these states are handled in Index.tsx
   if (!alertData) return null;
@@ -98,19 +143,11 @@ const RemediationPanel = () => {
           </CardHeader>
           
           <CardContent className="pt-2">
-            <RootCauseSteps steps={alertData.rootCauseSteps} />
-            
-            <div className="mt-6 pt-5 border-t border-gray-100 flex justify-between items-center">
-              <button className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-medium text-sm transition-colors">
-                <PlusCircle size={16} />
-                Add Custom Action
-              </button>
-              
-              <button className="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm transition-colors">
-                <GitBranch size={16} />
-                View Action History
-              </button>
-            </div>
+            {loading ? (
+              <div className="animate-pulse text-center py-8 text-gray-500">Loading remediation steps...</div>
+            ) : (
+              <RemediationSteps steps={remediationSteps} />
+            )}
           </CardContent>
         </Card>
       </div>

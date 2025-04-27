@@ -86,39 +86,11 @@ const StepItem: React.FC<StepItemProps> = ({ step, isLast }) => {
   );
 };
 
-interface RootCauseStepsProps {
+interface RemediationStepsProps {
   steps: Step[];
 }
 
-// Sample data
-const sampleSteps: Step[] = [
-  {
-    id: '1',
-    title: 'Initial Investigation',
-    description: 'Analyzing system logs and error patterns',
-    status: 'completed'
-  },
-  {
-    id: '2',
-    title: 'Memory Usage Analysis',
-    description: 'Monitoring memory consumption and identifying leaks',
-    status: 'in_progress'
-  },
-  {
-    id: '3',
-    title: 'Database Connection Review',
-    description: 'Checking connection pool settings and timeout configurations',
-    status: 'pending'
-  },
-  {
-    id: '4',
-    title: 'Performance Optimization',
-    description: 'Implementing identified improvements',
-    status: 'pending'
-  }
-];
-
-const RootCauseSteps: React.FC<RootCauseStepsProps> = ({ steps = sampleSteps }) => {
+const RemediationSteps: React.FC<RemediationStepsProps> = ({ steps }) => {
   return (
     <div className="bg-white rounded-lg p-4">
       {steps.map((step, index) => (
@@ -132,4 +104,4 @@ const RootCauseSteps: React.FC<RootCauseStepsProps> = ({ steps = sampleSteps }) 
   );
 };
 
-export default RootCauseSteps;
+export default RemediationSteps;
