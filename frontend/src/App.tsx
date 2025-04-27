@@ -16,11 +16,6 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={
-            <AlertDataProvider>
-              <Index />
-            </AlertDataProvider>
-          } />
           <Route path="/:alertId" element={
             <AlertDataProvider>
               <Index />

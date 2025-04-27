@@ -23,10 +23,21 @@ export interface Activity {
   severity: string;
 }
 
+export interface AlertDetails {
+  status: string;
+  urgency: string;
+  title: string;
+  service: string;
+  created: string;
+  lastUpdated: string;
+  assignedTo: string;
+}
+
 export interface Overview {
   title: string;
   metrics: Metric[];
   recentActivity: Activity[];
+  alertDetails: AlertDetails;
 }
 
 export interface RootCauseStep {

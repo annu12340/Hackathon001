@@ -34,7 +34,16 @@
       }
     ],
     "overview": {
-      "title": "SyABCrd",
+      "title": "System Performance Dashboard - ABC",
+      "alertDetails": {
+        "status": "TRIGGERED",
+        "urgency": "HIGH",
+        "title": "sf",
+        "service": "service 1",
+        "created": "2025-04-27 08:31:57 UTC",
+        "lastUpdated": "2025-04-27 08:31:57 UTC",
+        "assignedTo": "a j"
+      },
       "metrics": [
         {
           "title": "CPU Usage",
