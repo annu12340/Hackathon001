@@ -1,42 +1,35 @@
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { logsData } from '@/utils/dashboardData';
+import { ArrowUp, ArrowDown } from 'lucide-react';
+import { LogSummaryStat } from '@/utils/dashboardTypes';
 
-interface LogStat {
-  label: string;
-  value: number;
-  delta: number;
+interface LogSummaryProps {
+  data: LogSummaryStat[];
 }
 
-const LogSummary = () => {
+const LogSummary: React.FC<LogSummaryProps> = ({ data }) => {
   return (
-    <div className="grid">
-      <Card className="col-span-full">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold text-gray-900">Summarized Logs</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between mb-4">
-            {logsData.logSummaryStats.map((stat, index) => (
-              <div key={index} className="text-center">
-                <div className="text-2xl font-semibold text-gray-900">{stat.value}</div>
-                <div className="text-sm text-gray-500">{stat.label}</div>
-                <div className={cn(
-                  "text-xs mt-1",
-                  stat.delta > 0 ? "text-green-600" : "text-red-600"
-                )}>
-                  {stat.delta > 0 ? "+" : ""}{stat.delta}
-                </div>
-              </div>
-            ))}
+    <div className="grid grid-cols-3 gap-6">
+      {data.map((stat, idx) => (
+        <div key={idx} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+          <div className="text-sm text-gray-500 mb-1">{stat.label}</div>
+          <div className="flex items-end">
+            <div className="text-2xl font-semibold mr-2">{stat.value}</div>
+            <div className={`flex items-center text-xs font-medium ${stat.delta > 0 ? 'text-red-500' : 'text-green-500'}`}>
+              {stat.delta > 0 ? (
+                <>
+                  <ArrowUp size={12} className="mr-0.5" />
+                  +{stat.delta}
+                </>
+              ) : (
+                <>
+                  <ArrowDown size={12} className="mr-0.5" />
+                  {stat.delta}
+                </>
+              )}
+            </div>
           </div>
-          <p className="text-muted-foreground">
-            This dashboard provides a comprehensive view of your system logs, highlighting key metrics and trends.
-            Monitor your application's performance and quickly identify any anomalies or patterns in the logging data.
-          </p>
-        </CardContent>
-      </Card>
+        </div>
+      ))}
     </div>
   );
 };

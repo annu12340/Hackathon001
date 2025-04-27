@@ -1,94 +1,87 @@
-import React from 'react';
-import { CheckSquare, Circle, Calendar } from 'lucide-react';
-import { followUpTasks } from '@/utils/dashboardData';
+import React, { useState } from 'react';
+import { PlusCircle, Check, CalendarDays, AlertCircle } from 'lucide-react';
+import { Task } from '@/utils/dashboardTypes';
 
-const FollowUpPanel = () => {
-  const [tasks, setTasks] = React.useState(followUpTasks);
-  
+interface FollowUpPanelProps {
+  data: Task[];
+}
+
+const FollowUpPanel: React.FC<FollowUpPanelProps> = ({ data }) => {
+  const [tasks, setTasks] = useState<Task[]>(data);
+
   const toggleTaskCompletion = (taskId: number) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, completed: !task.completed } 
-        : task
-    ));
+    setTasks(
+      tasks.map((task) => {
+        if (task.id === taskId) {
+          return { ...task, completed: !task.completed };
+        }
+        return task;
+      })
+    );
   };
-  
+
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-gray-800">Follow-up Tasks</h1>
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
-          Add Task
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-2xl font-semibold text-gray-900">Follow-up Tasks</h1>
+        <button className="bg-black text-white flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
+          <PlusCircle size={16} />
+          <span>Add Task</span>
         </button>
       </div>
-      
-      <div className="bg-white rounded-2xl shadow-md overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="pl-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-8">
-                Status
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Task
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Due Date
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Assignee
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Priority
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {tasks.map(task => (
-              <tr key={task.id} className={task.completed ? 'bg-gray-50' : ''}>
-                <td className="pl-6 py-4 whitespace-nowrap">
-                  <button onClick={() => toggleTaskCompletion(task.id)}>
-                    {task.completed ? (
-                      <CheckSquare className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-gray-300" />
-                    )}
-                  </button>
-                </td>
-                <td className="px-6 py-4">
-                  <div className={`text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
-                    {task.title}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Calendar className="w-4 h-4 mr-1 text-gray-400" />
-                    {task.dueDate}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {task.assignee}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${task.priority === 'high' 
-                      ? 'bg-red-100 text-red-800' 
+
+      <div className="space-y-4">
+        {tasks.map((task) => (
+          <div
+            key={task.id}
+            className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-start gap-4 hover:shadow-md transition-shadow"
+          >
+            <button
+              onClick={() => toggleTaskCompletion(task.id)}
+              className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                task.completed
+                  ? 'bg-green-500 border-green-500 text-white'
+                  : 'border-gray-300'
+              }`}
+            >
+              {task.completed && <Check size={14} />}
+            </button>
+            <div className="flex-grow">
+              <div className="flex justify-between">
+                <h3
+                  className={`font-medium ${
+                    task.completed ? 'text-gray-400 line-through' : 'text-gray-900'
+                  }`}
+                >
+                  {task.title}
+                </h3>
+                <div
+                  className={`text-xs font-medium rounded-full px-2 py-1 ${
+                    task.priority === 'high'
+                      ? 'bg-red-50 text-red-700'
                       : task.priority === 'medium'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                    {task.priority}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      ? 'bg-yellow-50 text-yellow-700'
+                      : 'bg-blue-50 text-blue-700'
+                  }`}
+                >
+                  {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
+                </div>
+              </div>
+              <div className="flex gap-4 mt-2 text-sm text-gray-500">
+                <div className="flex items-center gap-1">
+                  <CalendarDays size={14} />
+                  <span>Due: {task.dueDate}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <AlertCircle size={14} />
+                  <span>Assignee: {task.assignee}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-      
+
       <div className="mt-8 bg-white p-6 rounded-2xl shadow-md">
         <h2 className="text-lg font-medium mb-4 text-gray-700">Task Summary</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

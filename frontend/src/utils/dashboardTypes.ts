@@ -11,7 +11,7 @@ export interface Metric {
   title: string;
   value: number;
   icon: string;
-  trend: string;
+  trend: 'up' | 'down' | 'neutral';
   color: string;
   suffix?: string;
   description: string;

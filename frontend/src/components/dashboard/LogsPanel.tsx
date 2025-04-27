@@ -3,9 +3,13 @@ import { Search } from 'lucide-react';
 import LogSourceSelector from './LogSourceSelector';
 import { cn } from '@/lib/utils';
 import LogSummary from './LogSummary';
-import { logsData } from '@/utils/dashboardData';
+import { Logs } from '@/utils/dashboardTypes';
 
-const LogsPanel = () => {
+interface LogsPanelProps {
+  data: Logs;
+}
+
+const LogsPanel: React.FC<LogsPanelProps> = ({ data }) => {
   const [activeSource, setActiveSource] = useState('kubectl');
 
   return (
@@ -23,38 +27,38 @@ const LogsPanel = () => {
       </div>
 
       <div className="grid mt-6 mb-6">
-        <LogSummary/>
+        <LogSummary data={data.logSummaryStats} />
       </div>
       
       <LogSourceSelector activeSource={activeSource} onSourceChange={setActiveSource} />
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="overflow-x-auto">
-          <div className="font-mono text-sm">
-            {logsData.logData[activeSource as keyof typeof logsData.logData].map((log, idx) => (
-              <div 
-                key={idx}
-                className={cn(
-                  "flex px-6 py-3 border-b border-gray-100 hover:bg-gray-50",
-                  log.level === 'ERROR' ? 'bg-red-50' :
-                  log.level === 'WARN' ? 'bg-yellow-50' :
-                  log.level === 'DEBUG' ? 'bg-purple-50' : ''
-                )}
-              >
-                <div className="w-28 text-gray-500">{log.timestamp.split(' ')[1]}</div>
-                <div className={cn(
-                  "w-16 font-semibold",
-                  log.level === 'ERROR' ? 'text-red-600' :
-                  log.level === 'WARN' ? 'text-yellow-600' :
-                  log.level === 'INFO' ? 'text-blue-600' :
-                  'text-gray-600'
-                )}>
-                  {log.level}
-                </div>
-                <div className="flex-1 text-gray-800">{log.message}</div>
-              </div>
-            ))}
-          </div>
+      
+      <div className="mt-6 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="bg-gray-50 py-3 px-4 border-b border-gray-100">
+          <h3 className="text-sm font-medium text-gray-700">
+            {activeSource === 'kubectl' ? 'Kubernetes Logs' : 
+             activeSource === 'var-logs' ? 'System Logs' : 'Database Logs'}
+          </h3>
+        </div>
+        <div className="p-4 max-h-[400px] overflow-y-auto font-mono text-sm">
+          {data.logData[activeSource]?.map((log, idx) => (
+            <div key={idx} className={cn(
+              "py-1.5 px-3 my-1 rounded flex items-start",
+              log.level === 'ERROR' ? "bg-red-50 text-red-700" : 
+              log.level === 'WARN' ? "bg-yellow-50 text-yellow-700" : 
+              "bg-gray-50 text-gray-700"
+            )}>
+              <span className="mr-3 opacity-60">{log.timestamp}</span>
+              <span className={cn(
+                "inline-block px-1.5 py-0.5 text-xs rounded font-medium mr-3",
+                log.level === 'ERROR' ? "bg-red-100" : 
+                log.level === 'WARN' ? "bg-yellow-100" : 
+                "bg-gray-100"
+              )}>
+                {log.level}
+              </span>
+              <span>{log.message}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

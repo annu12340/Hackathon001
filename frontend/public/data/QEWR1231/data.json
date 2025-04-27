@@ -1,0 +1,140 @@
+{
+    "followUpTasks": [
+      {
+        "id": 1,
+        "title": "Review memory usage after fix implementation",
+        "dueDate": "2025-04-26",
+        "priority": "high",
+        "completed": false,
+        "assignee": "You"
+      },
+      {
+        "id": 2,
+        "title": "Set up automated memory leak detection",
+        "dueDate": "2025-04-30",
+        "priority": "medium",
+        "completed": false,
+        "assignee": "DevOps Team"
+      },
+      {
+        "id": 3,
+        "title": "Document WebSocket best practices",
+        "dueDate": "2025-05-03",
+        "priority": "medium",
+        "completed": false,
+        "assignee": "You"
+      },
+      {
+        "id": 4,
+        "title": "Implement server-side connection timeout",
+        "dueDate": "2025-05-05",
+        "priority": "low",
+        "completed": false,
+        "assignee": "Backend Team"
+      }
+    ],
+    "overview": {
+      "title": "System PeSDFSDrformance Dashboard",
+      "metrics": [
+        {
+          "title": "CPU Usage",
+          "value": 68,
+          "icon": "Cpu",
+          "trend": "up",
+          "color": "blue",
+          "suffix": "%",
+          "description": "Average CPU utilization across all services"
+        },
+        {
+          "title": "Memory Usage",
+          "value": 82,
+          "icon": "Activity",
+          "trend": "up",
+          "color": "yellow",
+          "suffix": "%",
+          "description": "Current memory usage across all nodes"
+        },
+        {
+          "title": "Database Connections",
+          "value": 243,
+          "icon": "Database",
+          "trend": "neutral",
+          "color": "green",
+          "suffix": "",
+          "description": "Active database connections"
+        }
+      ],
+      "recentActivity": [
+        {
+          "time": "10:45 AM",
+          "event": "High memory usage alert triggered",
+          "severity": "warning"
+        },
+        {
+          "time": "10:30 AM",
+          "event": "Database connection pool expanded",
+          "severity": "info"
+        },
+        {
+          "time": "10:15 AM",
+          "event": "API Gateway restarted successfully",
+          "severity": "success"
+        },
+        {
+          "time": "10:05 AM",
+          "event": "Service authentication failure",
+          "severity": "error"
+        }
+      ]
+    },
+    "rootCauseSteps": [
+      {
+        "id": "1",
+        "title": "Initial System Analysis",
+        "description": "Review of system logs and error patterns",
+        "status": "completed"
+      },
+      {
+        "id": "2",
+        "title": "Memory Leak Investigation",
+        "description": "Analyzing memory usage patterns and potential leaks",
+        "status": "in_progress"
+      },
+      {
+        "id": "3",
+        "title": "Database Connection Analysis",
+        "description": "Review of connection pool settings and configurations",
+        "status": "pending"
+      },
+      {
+        "id": "4",
+        "title": "Performance Testing",
+        "description": "Load testing and performance metrics analysis",
+        "status": "pending"
+      }
+    ],
+    "logs": {
+      "logSummaryStats": [
+        { "label": "Errors", "value": 12, "delta": -4 },
+        { "label": "Warnings", "value": 28, "delta": 6 },
+        { "label": "Info", "value": 156, "delta": 32 }
+      ],
+      "logData": {
+        "kubectl": [
+          { "level": "ERROR", "timestamp": "2025-04-23 10:45:23", "message": "Failed to connect to database" },
+          { "level": "WARN", "timestamp": "2025-04-23 10:44:57", "message": "High memory usage detected" },
+          { "level": "INFO", "timestamp": "2025-04-23 10:44:30", "message": "Pod scaling completed" }
+        ],
+        "var-logs": [
+          { "level": "ERROR", "timestamp": "2025-04-23 10:43:12", "message": "System service crash detected" },
+          { "level": "INFO", "timestamp": "2025-04-23 10:42:45", "message": "System backup completed" },
+          { "level": "WARN", "timestamp": "2025-04-23 10:42:30", "message": "Disk usage above 80%" }
+        ],
+        "db-logs": [
+          { "level": "ERROR", "timestamp": "2025-04-23 10:41:15", "message": "Query timeout after 30s" },
+          { "level": "WARN", "timestamp": "2025-04-23 10:40:30", "message": "Slow query detected" },
+          { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "Database backup completed" }
+        ]
+      }
+    }
+  }

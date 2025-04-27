@@ -1,18 +1,11 @@
-import dashboardData from '../components/data/data.json';
-import { 
-  DashboardData, 
-  Task, 
-  Overview, 
-  RootCauseStep, 
-  Logs 
-} from './dashboardTypes';
+import { DashboardData } from './dashboardTypes';
 
-// Type assertion for the imported JSON data
-const typedData = dashboardData as unknown as DashboardData;
+// This file now exports functions to get the data from the provided alert data
+// rather than importing directly from a static file
 
-export const followUpTasks: Task[] = typedData.followUpTasks;
-export const overviewData: Overview = typedData.overview;
-export const rootCauseSteps: RootCauseStep[] = typedData.rootCauseSteps;
-export const logsData: Logs = typedData.logs;
+export const getFollowUpTasks = (data: DashboardData) => data.followUpTasks;
+export const getOverviewData = (data: DashboardData) => data.overview;
+export const getRootCauseSteps = (data: DashboardData) => data.rootCauseSteps;
+export const getLogsData = (data: DashboardData) => data.logs;
 
-export default typedData; 
+export default null; // No longer exporting the data directly 
