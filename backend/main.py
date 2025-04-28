@@ -1,7 +1,6 @@
 import asyncio
 import logging
-from app.slack_bot import SlackBot
-
+from app.bot import SlackBot
 
 logging.basicConfig(level=logging.INFO)
 

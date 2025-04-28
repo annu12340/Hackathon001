@@ -129,7 +129,7 @@ class TriageService:
                 "step": step
             }
     
-    async def orchestrate_triage(self, triage_data: Dict[str, List[str]]) -> Dict:
+    async def orchestrate_triage(self, triage_data) -> Dict:
         """Orchestrate the entire triage process."""
         results = {}
         
