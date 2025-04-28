@@ -1,0 +1,58 @@
+{
+  "overview": {
+    "title": "Service Incident Dashboard",
+    "alertDetails": {
+      "status": "ACKNOWLEDGED",
+      "urgency": "HIGH",
+      "title": "Unable to write to temporary directory",
+      "service": "Unknown Service",
+      "created": "2025-04-27T04:35:54Z",
+      "lastUpdated": "2025-04-27T04:40:24Z",
+      "assignedTo": "Unassigned"
+    },
+    "aiGeneratedData": {
+      "alertSummary": "Unable to write to temporary directory",
+      "confidence": "High",
+      "environment": "Production",
+      "cluster": "Unknown Cluster",
+      "nodeName": "Unknown Node",
+      "errorType": "incident",
+      "errorSeverity": "High",
+      "impactedComponent": "Unknown Component",
+      "componentVersion": "v2.3.1",
+      "firstDetected": "2025-04-27T04:35:54Z"
+    }
+  },
+  "logs": {
+    "logSummaryStats": [
+      {
+        "label": "Errors",
+        "value": 0,
+        "delta": 0
+      },
+      {
+        "label": "Warnings",
+        "value": 0,
+        "delta": 0
+      },
+      {
+        "label": "Info",
+        "value": 0,
+        "delta": 0
+      }
+    ],
+    "logData": {
+      "kubectl": []
+    }
+  },
+  "followUpTasks": [
+    {
+      "id": 1,
+      "title": "Review service after fix implementation",
+      "dueDate": "2025-04-28",
+      "priority": "high",
+      "completed": false,
+      "assignee": "Unassigned"
+    }
+  ]
+}

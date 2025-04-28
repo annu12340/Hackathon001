@@ -49,7 +49,7 @@ const OverviewPanel: React.FC<OverviewPanelProps> = ({ data }) => {
             
             {/* Right column - Incident number and actions */}
             <div className="flex-shrink-0 flex flex-col items-end">
-              <div className="text-sm text-gray-500 mb-2">Incident #ABC-123</div>
+              <div className="text-xs text-gray-500 mb-2">Incident #Q3TAMBYDY6HQI4</div>
               <div className="flex gap-2">
               <button className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex items-center">
               <PhoneCall size={12} className="mr-1.5" />

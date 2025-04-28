@@ -2,6 +2,8 @@ import logging
 import asyncio
 import re
 import json
+import os
+from datetime import datetime
 from slack_bolt.app.async_app import AsyncApp
 from slack_bolt.adapter.socket_mode.async_handler import AsyncSocketModeHandler
 from . import config
@@ -58,32 +60,144 @@ class SlackBot:
             
         return None
 
+    async def update_incident_files(self, incident_id, incident_dic, results,):
+        """Update JSON files for the incident"""
+        logger.info(f"Updating incident files for {incident_id}")
+        try:
+            # Create directory structure
+            base_dir = os.path.join(os.getcwd(), "frontend", "public", "data")
+            incident_dir = os.path.join(base_dir, incident_id)
+            os.makedirs(incident_dir, exist_ok=True)
+
+            # Generate data.json
+            data = {
+                "overview": {
+                    "title": f"{incident_dic.get('service', {}).get('name', 'Service')} Incident Dashboard",
+                    "alertDetails": {
+                        "status": incident_dic.get('status', 'unknown').upper(),
+                        "urgency": incident_dic.get('urgency', 'unknown').upper(),
+                        "title": incident_dic.get('title', 'Unknown Incident'),
+                        "service": incident_dic.get('service', {}).get('name', 'Unknown Service'),
+                        "created": incident_dic.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")),
+                        "lastUpdated": incident_dic.get('last_status_change_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC")),
+                        "assignedTo": incident_dic.get('assignments', [{}])[0].get('assignee', {}).get('name', 'Unassigned')
+                    },
+                    "aiGeneratedData": {
+                        "alertSummary": incident_dic.get('description', 'No description available'),
+                        "confidence": "High",
+                        "environment": "Production",
+                        "cluster": incident_dic.get('service', {}).get('name', 'Unknown Cluster'),
+                        "nodeName": incident_dic.get('service', {}).get('name', 'Unknown Node'),
+                        "errorType": incident_dic.get('type', 'Unknown Error'),
+                        "errorSeverity": incident_dic.get('urgency', 'Unknown').capitalize(),
+                        "impactedComponent": incident_dic.get('service', {}).get('name', 'Unknown Component'),
+                        "componentVersion": "v2.3.1",
+                        "firstDetected": incident_dic.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"))
+                    }
+                },
+                "logs": {
+                    "logSummaryStats": [
+                        {"label": "Errors", "value": len([l for l in results.get('logs', []) if l.get('level') == 'ERROR']), "delta": 0},
+                        {"label": "Warnings", "value": len([l for l in results.get('logs', []) if l.get('level') == 'WARN']), "delta": 0},
+                        {"label": "Info", "value": len([l for l in results.get('logs', []) if l.get('level') == 'INFO']), "delta": 0}
+                    ],
+                    "logData": {
+                        "kubectl": results.get('logs', [])
+                    }
+                },
+                "followUpTasks": [
+                    {
+                        "id": 1,
+                        "title": f"Review {incident_dic.get('service', {}).get('name', 'service')} after fix implementation",
+                        "dueDate": (datetime.now()).strftime("%Y-%m-%d"),
+                        "priority": "high" if incident_dic.get('urgency') == 'high' else "medium",
+                        "completed": False,
+                        "assignee": incident_dic.get('assignments', [{}])[0].get('assignee', {}).get('name', 'Unassigned')
+                    },
+                ],
+            }
+
+            # Write data.json
+            with open(os.path.join(incident_dir, "data.json"), "w") as f:
+                json.dump(data, f, indent=2)
+
+            # Generate remediation steps
+            remediation_steps = []
+            for platform, platform_data in results.items():
+                for step in platform_data.get('steps_results', []):
+                    remediation_steps.append({
+                        "id": str(len(remediation_steps) + 1),
+                        "title": step.get('step', 'Unknown Step'),
+                        "description": step.get('message', 'No description available'),
+                        "status": step.get('status', 'pending')
+                    })
+
+            # Write remediationSteps.json
+            with open(os.path.join(incident_dir, "remediationSteps.json"), "w") as f:
+                json.dump({"remediationSteps": remediation_steps}, f, indent=2)
+
+            # Create and write log file
+            log_file = os.path.join(incident_dir, f"{incident_id}_logs.txt")
+            with open(log_file, "w") as f:
+                f.write(f"Incident {incident_id} Log File\n")
+                f.write("=" * 50 + "\n\n")
+                f.write(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Status: {incident_dic.get('status', 'unknown')}\n")
+                f.write(f"Urgency: {incident_dic.get('urgency', 'unknown')}\n")
+                f.write(f"Service: {incident_dic.get('service', {}).get('name', 'Unknown Service')}\n\n")
+                
+                # Write triage results
+                f.write("Triage Results:\n")
+                f.write("-" * 50 + "\n")
+                for platform, platform_data in results.items():
+                    f.write(f"\nPlatform: {platform}\n")
+                    for step in platform_data.get('steps_results', []):
+                        status = "✅" if step.get('status') == 'success' else "❌"
+                        f.write(f"{status} {step.get('step', 'Unknown Step')}\n")
+                        if step.get('output'):
+                            f.write(f"Output: {step['output']}\n")
+                        if step.get('error'):
+                            f.write(f"Error: {step['error']}\n")
+                        f.write("\n")
+
+                # Write log summary
+                f.write("\nLog Summary:\n")
+                f.write("-" * 50 + "\n")
+                for stat in data['logs']['logSummaryStats']:
+                    f.write(f"{stat['label']}: {stat['value']}\n")
+
+            logger.info(f"Updated incident files for {incident_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Error updating incident files: {str(e)}")
+            return False
+
     async def handle_alert(self, text: str, thread_ts: str, say):
         """Handle all alerts including PagerDuty incidents"""
         try:
             # Send initial processing message
-            initial_message = await say(text=":hourglass_flowing_sand: *Starting the analysis...*", thread_ts=thread_ts)
+            await say(text=":hourglass_flowing_sand: *Starting the analysis...*", thread_ts=thread_ts)
+            initial_message = await say(text=".", thread_ts=thread_ts)
             message_ts = initial_message['ts']
             channel = initial_message['channel']
-
+            
+      
             # Step 1: Check if this is a PagerDuty incident and get details if it is
-            # incident_id = self.extract_incident_id(text)
-            incident_id="Q3TAMBYDY6HQI4"
+            incident_id = "Q3TAMBYDY6HQI4"  # This should be extracted from text
             if incident_id:
                 logger.info(f"Found PagerDuty incident ID: {incident_id}")
-                # Update status to indicate we're fetching PD details
                 await self.update_status(channel, message_ts, steps_done=1, current_step="Getting pagerduty alert info", thread_ts=thread_ts)
                 
                 # Fetch incident details from PagerDuty API
                 incident_dic = self.pd_client.get_incident(incident_id)
+                # incident_dic ={'kdas':'adas'}
 
-            
             # Step 2: Proceed with standard alert analysis
             if incident_dic:
-                    # Format and send incident details
-                    summary=azure_openai.summarize_pagerduty_alert(incident_dic)
-                    details_message = self.pd_client.format_incident_details(summary)
-                    print("detailed message is",details_message)
+                # Format and send incident details
+                summary = azure_openai.summarize_pagerduty_alert(incident_dic)
+                details_message = self.pd_client.format_incident_details(summary)
+                print("detailed message is", details_message)
             else:
                 return
 
@@ -93,6 +207,7 @@ class SlackBot:
             
             await asyncio.sleep(2)
             await self.update_status(channel, message_ts, steps_done=4, current_step="Analyzing root cause", thread_ts=thread_ts)
+            
             # Step 3: Get triage steps
             node_id = "lima-rancher-desktop"
             triage_steps = databricks_client.get_triage_steps(node_id)
@@ -100,17 +215,20 @@ class SlackBot:
             await self.update_status(channel, message_ts, steps_done=5, current_step="Getting the remediation steps", thread_ts=thread_ts)
 
             # Step 4: Run diagnostics
-            results = await self.triage_service.orchestrate_triage(triage_steps)
+            results = await self.triage_service.orchestrate_triage(triage_steps,incident_id)
             await asyncio.sleep(2)
             await self.update_status(channel, message_ts, steps_done=6, current_step="Running diagnostics", thread_ts=thread_ts)
             
-            # Step 5: Format results
-            result=await self.send_results(results, node_id, thread_ts, say)
+            # Step 5: Update JSON files
+            await self.update_incident_files(incident_id, incident_dic, results, node_id)
+            
+            # Step 6: Format results
+            result = await self.send_results(results, node_id, thread_ts, say)
             await self.update_status(channel, message_ts, steps_done=7, current_step="Formatting results", thread_ts=thread_ts)
             
             # Format the final message with success rate and detailed analysis link
             detailed_analysis_url = f"http://localhost:3000/{incident_id}"
-            final_message=f"""
+            final_message = f"""
                 \n\n\n*Analysis Complete!* 
                 :sparkles: *Success Rate:* {result['Success_rate']} steps completed successfully
                 \n\n📊 *Detailed Analysis:*
