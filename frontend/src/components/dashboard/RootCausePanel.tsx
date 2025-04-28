@@ -7,8 +7,19 @@ interface RootCausePanelProps {
   data: RootCauseStep[];
 }
 
-const RootCausePanel: React.FC<RootCausePanelProps> = ({ data }) => {
+const RootCausePanel: React.FC<RootCausePanelProps> = ({ data = [] }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  
+  if (!data || data.length === 0) {
+    return (
+      <div className="animate-in fade-in duration-500">
+        <div className="text-center text-gray-500 py-12">
+          <h2 className="text-xl font-semibold mb-2">No root cause steps available</h2>
+          <p className="text-sm">Root cause analysis data is not available at this time.</p>
+        </div>
+      </div>
+    );
+  }
   
   // Calculate progress
   const completedSteps = data.filter(step => step.status === 'completed').length;

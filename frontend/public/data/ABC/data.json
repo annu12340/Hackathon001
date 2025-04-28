@@ -58,32 +58,6 @@
     }
 
   },
-  "rootCauseSteps": [
-    {
-      "id": "1",
-      "title": "Initial System Analysis",
-      "description": "Review of system logs and error patterns",
-      "status": "completed"
-    },
-    {
-      "id": "2",
-      "title": "Memory Leak Investigation",
-      "description": "Analyzing memory usage patterns and potential leaks",
-      "status": "in_progress"
-    },
-    {
-      "id": "3",
-      "title": "Database Connection Analysis",
-      "description": "Review of connection pool settings and configurations",
-      "status": "pending"
-    },
-    {
-      "id": "4",
-      "title": "Performance Testing",
-      "description": "Load testing and performance metrics analysis",
-      "status": "pending"
-    }
-  ],
   "logs": {
     "logSummaryStats": [
       { "label": "Errors", "value": 12, "delta": -4 },
@@ -107,5 +81,15 @@
         { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "Database backup completed" }
       ]
     }
-  }
+  },
+  "rootCauseSteps": [
+
+    {
+      "id": "2",
+      "title": "Memory Leak Investigation",
+      "description": "Analyzing memory usage patterns and potential leaks",
+      "status": "in_progress"
+    }
+
+  ]
 } 
