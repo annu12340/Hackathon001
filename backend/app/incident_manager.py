@@ -6,14 +6,12 @@ from .file_manager import FileManager
 from .azure.databricks_client import DatabricksTriageClient
 from .utils.pagerduty_client import PagerDutyClient
 from .azure.azure_openai import AzureOpenAIClient
-from .triage import TriageService
 
 logger = logging.getLogger(__name__)
 
 class IncidentManager:
     def __init__(self, app, config):
         self.app = app
-        self.triage_service = TriageService()
         self.pd_client = PagerDutyClient(config.PAGERDUTY_API_KEY)
         self.azure_openai = AzureOpenAIClient()
         self.databricks_client = DatabricksTriageClient(use_mock=True)
@@ -166,12 +164,11 @@ class IncidentManager:
             triage_steps = self.databricks_client.get_triage_steps(cluster,node_id,summarized_pd_alert)
             print("Triage steps are", triage_steps)
             await asyncio.sleep(2)
-            
             await self.update_status(channel, message_ts, steps_done=5, 
                                    current_step="Getting the remediation steps", 
                                    thread_ts=thread_ts)
 
-            results = await self.triage_service.orchestrate_triage(triage_steps)
+            results = await self.databricks_client.orchestrate_triage(cluster,node_id,triage_steps)
             await asyncio.sleep(2)
             
             await self.update_status(channel, message_ts, steps_done=6, 
