@@ -23,7 +23,7 @@ class DatabricksTriageClient:
             'Authorization': f'Bearer {os.getenv("AZURE_DATABRICKS_TOKEN")}',
             'Content-Type': 'application/json'
         }
-        self.command_timeout = 300  # 5 minutes timeout
+        self.command_timeout = 300
         logger.info("Initialized DatabricksTriageClient")
     
     def create_request_data(self, message: str) -> Dict:
