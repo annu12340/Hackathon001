@@ -189,29 +189,49 @@ class DatabricksTriageClient:
                 "step": step
             }
 
-    def orchestrate_triage(self,cluster,node_id,triage_steps) -> Dict:
-        """Orchestrate the entire triage process."""
-        results = {}
+    async def orchestrate_triage(self, cluster, node_id, triage_steps, say, thread_ts) -> Dict:
+        """Orchestrate triage steps by executing commands and posting Slack messages."""
+        results = {"blocks": []}
+        
 
-        # Execute steps sequentially
-        for step in triage_steps.get('actions'):
-                command=step.get('command')
-                risk=step.get('risk')
-                if risk == "low" or risk == "medium":
-                    result = self.execute_triage_step(command)
-                else:
-                    result = {
-                        "status": "pending_approval",
-                        "message": "High-risk command requires manual approval",
-                        "step": step,
-                        "analysis": step
-                    }
-                # If a step fails, stop execution for this platform
+        def format_risk(risk: str) -> str:
+            emoji = {"low": ":priority-low:", "medium": ":priority-medium:", "high": ":priority-highest:"}
+            return f"{emoji.get(risk, '❔')} *{risk.upper()}* risk"
+
+        def create_section(text: str) -> Dict:
+            return {"type": "section", "text": {"type": "mrkdwn", "text": text}}
+        
+        for step in triage_steps.get("actions", []):
+            command = step.get("command")
+            risk = step.get("risk", "unknown")
+
+            blocks=[create_section(f"- Executing command `{command}` with {format_risk(risk)}")]
+
+            if risk in ("low", "medium"):
+                result = self.execute_triage_step(command)
+
                 if result["status"] == "error":
+                    blocks.append(create_section(f"❌ *Error:* {result.get('message', 'Unknown error')}"))
+                    await say(blocks=blocks, thread_ts=thread_ts)
                     break
+
+            elif risk == "high":
+                blocks.append(create_section(f"Since this is a high risk command, human in the loop is required"))
+                blocks.append({
+                    "type": "actions",
+                    "elements": [
+                        {
+                            "type": "button",
+                            "text": {"type": "plain_text", "text": "Approve", "emoji": True},
+                            "value": f"execute_{command}",
+                            "action_id": "execute_high_risk_command",
+                            "style": "danger"
+                        }
+                    ]
+                })
+                
+
+            await say(blocks=blocks, thread_ts=thread_ts)
+
         return results
 
-
-a=DatabricksTriageClient()
-steps={'summary': "The system is unable to write to the temporary directory, which may be due to a permissions issue or lack of available space. The logs also indicate a failure to resolve the hostname 'lima-rancher-desktop' when attempting to connect via SSH, suggesting a potential issue with DNS resolution or the hostname configuration. Check the permissions and available space of the temporary directory, and verify the DNS resolution and hostname configuration.", 'actions': [{'command': 'df -h /tmp', 'risk': 'low'}, {'command': 'ls -ld /tmp', 'risk': 'low'}, {'command': 'ssh -v user@lima-rancher-desktop', 'risk': 'medium'}, {'command': 'dig +short lima-rancher-desktop', 'risk': 'low'}, {'command': 'getent hosts lima-rancher-desktop', 'risk': 'low'}]}
-a.orchestrate_triage("lima-rancher-desktop","lima-rancher-desktop",steps)
