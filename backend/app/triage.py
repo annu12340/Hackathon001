@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 class TriageService:
     def __init__(self):
         self.command_timeout = config.COMMAND_TIMEOUT
-        self.allowed_commands = config.ALLOWED_COMMANDS
 
     async def _execute_command(self, command: str) -> Tuple[bool, str, str]:
         """Execute a shell command with timeout."""

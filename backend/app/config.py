@@ -15,8 +15,3 @@ PAGERDUTY_API_KEY = os.environ.get("PAGERDUTY_API_KEY")
 # Command execution settings
 COMMAND_TIMEOUT = 300  
 
-# Allowed commands per platform
-ALLOWED_COMMANDS = {
-    "k8s": ["systemctl", "kubectl", "journalctl"],
-    "linux": ["echo", "curl"]
-} 

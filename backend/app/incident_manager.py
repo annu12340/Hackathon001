@@ -143,8 +143,8 @@ class IncidentManager:
 
             if incident_dic:
                 summary = self.azure_openai.summarize_pagerduty_alert(incident_dic)
-                details_message = self.pd_client.format_incident_details(summary)
-                print("detailed message is", details_message)
+                summarized_pd_alert = self.pd_client.format_incident_details(summary)
+                print("detailed message is", summarized_pd_alert)
             else:
                 return
 
@@ -161,9 +161,10 @@ class IncidentManager:
             await self.update_status(channel, message_ts, steps_done=4, 
                                    current_step="Analyzing root cause", 
                                    thread_ts=thread_ts)
-            
+            cluster="lima-rancher-desktop"
             node_id = "lima-rancher-desktop"
-            triage_steps = self.databricks_client.get_triage_steps(node_id)
+            triage_steps = self.databricks_client.get_triage_steps(cluster,node_id,summarized_pd_alert)
+            print("Triage steps are", triage_steps)
             await asyncio.sleep(2)
             
             await self.update_status(channel, message_ts, steps_done=5, 
