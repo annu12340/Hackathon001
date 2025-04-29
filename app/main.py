@@ -70,7 +70,7 @@ class TriageOrchestrator:
             return {
                 "success_rate": f"{success_count}/{total_steps}",
                 "summary": "\n".join(summary),
-                "results": results
+                "results ": results
             }
             
         except Exception as e:
