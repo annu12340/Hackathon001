@@ -5,6 +5,7 @@ export interface Task {
   priority: string;
   completed: boolean;
   assignee: string;
+  description: string;
 }
 
 export interface Metric {
@@ -42,7 +43,7 @@ export interface AiGeneratedData {
   errorSeverity: string;
   impactedComponent: string;
   componentVersion: string;
-  firstDetected: string;
+  platform: string;
   alertSummary?: string;
 }
 
@@ -59,6 +60,7 @@ export interface RootCauseStep {
   title: string;
   description: string;
   status: 'completed' | 'in_progress' | 'pending';
+  recommendedAction?: string;
 }
 
 export interface LogEntry {
@@ -80,6 +82,7 @@ export interface LogData {
 export interface Logs {
   logSummaryStats: LogSummaryStat[];
   logData: LogData;
+  logSummary: string;
 }
 
 export interface DashboardData {

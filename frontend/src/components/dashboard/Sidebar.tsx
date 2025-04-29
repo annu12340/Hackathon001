@@ -40,7 +40,7 @@ interface SidebarProps {
 
 const Sidebar = ({ activePage, setActivePage }: SidebarProps) => {
   return (
-    <div className="h-screen w-64 bg-white border-r border-gray-100 p-4 flex flex-col">
+    <div className="h-viewport w-64 bg-white border-r border-gray-100 p-4 flex flex-col">
       <div className="flex items-center gap-3 mb-8 pl-4">
         <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center">
           <span className="text-white font-semibold">N</span>
@@ -80,7 +80,7 @@ const Sidebar = ({ activePage, setActivePage }: SidebarProps) => {
       <div className="mt-auto pb-4">
         <div className="p-4 bg-gray-50 rounded-xl">
           <p className="text-sm text-gray-600">
-            some random text
+            Kasper: AI Incident response agent
           </p>
           <button className="text-sm text-blue-600 font-medium mt-1 hover:text-blue-700">
             View docs →

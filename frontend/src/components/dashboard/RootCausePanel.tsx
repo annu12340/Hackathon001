@@ -22,8 +22,7 @@ const RootCausePanel: React.FC<RootCausePanelProps> = ({ data = [] }) => {
   }
   
   // Calculate progress
-  const completedSteps = data.filter(step => step.status === 'completed').length;
-  const inProgressSteps = data.filter(step => step.status === 'in_progress').length;
+  const completedSteps = data.length;
   const totalSteps = data.length;
   const progressPercentage = Math.round((completedSteps / totalSteps) * 100);
   
@@ -63,8 +62,8 @@ const RootCausePanel: React.FC<RootCausePanelProps> = ({ data = [] }) => {
               <Clock size={20} className="text-indigo-600" />
             </div>
             <div>
-              <p className="text-gray-500 text-xs mb-1">Time Elapsed</p>
-              <p className="font-semibold">2 hours 45 minutes</p>
+              <p className="text-gray-500 text-xs mb-1">Time Taken</p>
+              <p className="font-semibold">10 minutes</p>
             </div>
           </CardContent>
         </Card>
@@ -87,7 +86,7 @@ const RootCausePanel: React.FC<RootCausePanelProps> = ({ data = [] }) => {
               <CheckCircle2 size={20} className="text-green-600" />
             </div>
             <div>
-              <p className="text-gray-500 text-xs mb-1">Progress</p>
+              <p className="text-gray-500 text-xs mb-1">Completed</p>
               <div className="flex items-center gap-2">
                 <div className="w-20 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div 
@@ -109,10 +108,11 @@ const RootCausePanel: React.FC<RootCausePanelProps> = ({ data = [] }) => {
           <CardContent className="p-5">
             <div className="flex items-center text-indigo-600 text-sm font-medium mb-2">
               <CircleDashed size={16} className="mr-2 animate-pulse" />
-              <span>IN PROGRESS</span>
+              <span>Completed</span>
             </div>
             <h3 className="text-lg font-semibold mb-2">{currentStep.title}</h3>
-            <p className="text-gray-600 mb-4">{currentStep.description}</p>
+            <p className="text-gray-600 text-sm mb-4">{currentStep.description}</p>
+            <p className="text-gray-600 mb-4"></p>
             
             {/* Recommended action */}
             <div className="bg-indigo-50 rounded-lg p-4 flex items-start">
@@ -121,7 +121,7 @@ const RootCausePanel: React.FC<RootCausePanelProps> = ({ data = [] }) => {
               </div>
               <div>
                 <p className="font-medium text-sm text-gray-800 mb-1">Recommended Next Action</p>
-                <p className="text-sm text-gray-600">Analyze memory consumption patterns and check for potential memory leaks in the API Gateway component.</p>
+                <p className="text-sm text-gray-600">{currentStep.recommendedAction} </p>
               </div>
             </div>
           </CardContent>

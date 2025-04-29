@@ -5,8 +5,8 @@ import { cn } from '@/lib/utils';
 
 const sources = [
   { id: 'kubectl', label: 'Kubernetes Logs', icon: Server },
-  { id: 'var-logs', label: 'System Logs', icon: FileText },
-  { id: 'db-logs', label: 'Database Logs', icon: Database },
+  { id: 'journalctl', label: 'Journalctl Logs', icon: FileText },
+  { id: 'dmseg', label: 'dmseg Logs', icon: Database },
 ];
 
 interface LogSourceSelectorProps {

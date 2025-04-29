@@ -17,7 +17,7 @@ interface StepItemProps {
 const StepItem: React.FC<StepItemProps> = ({ step, isLast }) => {
   const statusConfig = {
     completed: {
-      icon: <Check className="w-5 h-5" />,
+      icon: <Check className="w-2 h-2" />,
       color: 'text-green-600 border-green-600',
       bgColor: 'bg-green-50',
       textColor: 'text-green-600',
@@ -31,7 +31,7 @@ const StepItem: React.FC<StepItemProps> = ({ step, isLast }) => {
       lineColor: 'border-blue-200'
     },
     pending: {
-      icon: <Circle className="w-5 h-5" />,
+      icon: <Circle className="w-2 h-2" />,
       color: 'text-gray-300 border-gray-300',
       bgColor: 'bg-gray-50',
       textColor: 'text-gray-400',
@@ -50,7 +50,7 @@ const StepItem: React.FC<StepItemProps> = ({ step, isLast }) => {
         {/* Status indicator */}
         <div className="relative">
           <div className={cn(
-            'w-8 h-8 rounded-full border-2 flex items-center justify-center',
+            'w-5 h-5 rounded-full border-2 flex items-center justify-center',
             config.color,
             config.bgColor
           )}>
@@ -67,7 +67,7 @@ const StepItem: React.FC<StepItemProps> = ({ step, isLast }) => {
         {/* Content */}
         <div className="flex-1 min-w-0 pt-1">
           <h3 className={cn(
-            "font-medium",
+            "font-small",
             step.status === 'pending' ? 'text-gray-400' : 'text-gray-900'
           )}>
             {step.title}

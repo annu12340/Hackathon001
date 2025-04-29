@@ -1,58 +1,168 @@
+
 {
+
   "overview": {
-    "title": "Service Incident Dashboard",
+    "title": "System Performance Dashboard",
     "alertDetails": {
-      "status": "ACKNOWLEDGED",
+      "status": "TRIGGERED",
       "urgency": "HIGH",
-      "title": "Unable to write to temporary directory",
-      "service": "Unknown Service",
-      "created": "2025-04-27T04:35:54Z",
-      "lastUpdated": "2025-04-27T04:40:24Z",
-      "assignedTo": "Unassigned"
+      "title": "Failed to Write to /tmp - Scheduled Jobs Impacted",
+      "service": "mgcx reporting cron",
+      "created": "2025-04-27 08:31:57 UTC",
+      "lastUpdated": "2025-04-27 08:31:57 UTC",
+      "assignedTo": "Andrew James"
     },
     "aiGeneratedData": {
-      "alertSummary": "Unable to write to temporary directory",
+      "alertSummary": "The MG-CX reporting service is failing to complete scheduled job executions. Multiple cron jobs have not run as expected in the last 5 hours.",
       "confidence": "High",
       "environment": "Production",
-      "cluster": "Unknown Cluster",
-      "nodeName": "Unknown Node",
-      "errorType": "incident",
-      "errorSeverity": "High",
-      "impactedComponent": "Unknown Component",
+      "cluster": "us-west-cluster-01",
+      "nodeName": "poolA-batch1-worker3",
+      "errorType": "Disk Issue",
+      "errorSeverity": "Critical",
+      "impactedComponent": "mgcx cron",
       "componentVersion": "v2.3.1",
-      "firstDetected": "2025-04-27T04:35:54Z"
+      "platform": "kubernetes"
     }
-  },
-  "logs": {
-    "logSummaryStats": [
-      {
-        "label": "Errors",
-        "value": 0,
-        "delta": 0
-      },
-      {
-        "label": "Warnings",
-        "value": 0,
-        "delta": 0
-      },
-      {
-        "label": "Info",
-        "value": 0,
-        "delta": 0
-      }
-    ],
-    "logData": {
-      "kubectl": []
-    }
+
   },
   "followUpTasks": [
     {
       "id": 1,
-      "title": "Review service after fix implementation",
-      "dueDate": "2025-04-28",
+      "title": "Implement proper log rotation:",
+      "description": "Ensure that log files are rotated regularly (daily, weekly, etc.) and that old logs are compressed or deleted. ",
       "priority": "high",
-      "completed": false,
-      "assignee": "Unassigned"
+      "completed": false
+
+    },
+    {
+      "id": 2,
+      "title": "Monitor disk usage",
+      "description": "Set up monitoring to track disk space usage on the /var/log partition (or the entire root partition, if /var/log is not on a separate partition).",
+      "priority": "medium",
+      "completed": false
+
+    },
+    {
+      "id": 3,
+      "title": "Enable compression",
+      "description": "Configure journald to compress archived log files to save disk space.",
+      "priority": "medium",
+      "completed": false
+
+    },
+    {
+      "id": 4,
+      "title": "Control log retention",
+      "description": "Determine how long logs need to be stored and configure a policy to delete older logs.",
+      "priority": "low",
+      "completed": false
+
     }
+  ],
+  "logs": {
+    "logSummary": "The logs indicate a disk space problem in /var/log, driven by growth in application and systemd journal logs, as shown by kubectl and journalctl. kubectl logs detail application deployment and scaling, with increasing disk usage warnings, while journalctl logs show the progression of the disk filling up. dmesg logs capture kernel-level boot messages and hardware initialization, which are unrelated to the immediate disk space issue.",
+    "logSummaryStats": [
+      { "label": "Errors", "value": 12, "delta": -4 },
+      { "label": "Warnings", "value": 28, "delta": 6 },
+      { "label": "Info", "value": 156, "delta": 32 }
+    ],
+    "logData": {
+      "kubectl": [
+        { "level": "INFO", "timestamp": "2025-04-30 00:00:00", "message": "Application deployment started" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:00:05", "message": "Pod 'app-pod-1' scheduled on node 'node-1'" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:00:10", "message": "Container 'app-container' started in pod 'app-pod-1'" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:05:00", "message": "Log rotation initiated for 'app-container'" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:10:00", "message": "Database connection established" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:15:00", "message": "Incoming request processed" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:20:00", "message": "Data written to persistent volume" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:25:00", "message": "Cache synchronization complete" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:30:00", "message": "Metrics server reported successful scrape" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:35:00", "message": "Image pull policy: IfNotPresent" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:40:00", "message": "ConfigMap updated for 'app-pod-1'" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:45:00", "message": "Secret mounted to pod 'app-pod-1'" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:50:00", "message": "Health check passed for 'app-container'" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:55:00", "message": "Horizontal Pod Autoscaler scaling up pod count" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:00:00", "message": "New pod 'app-pod-2' scheduled" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:00:05", "message": "Container 'app-container' started in pod 'app-pod-2'" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:01:00", "message": "Disk usage on /var/log is at 70%" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:02:00", "message": "Application logs are growing" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:03:00", "message": "Disk usage on /var/log is at 75%" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:04:00", "message": "Downloading large file" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:05:00", "message": "Disk usage on /var/log is at 80%" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:06:00", "message": "Processing data" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:07:00", "message": "Disk usage on /var/log is at 85%" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:08:00", "message": "Writing to the database" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:08:30", "message": "Disk usage on /var/log is at 90%" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:00", "message": "Disk usage on /var/log is at 92%" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:30", "message": "Disk usage on /var/log is at 95%" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:45", "message": "Disk usage on /var/log is at 97%" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:50", "message": "Disk usage on /var/log is at 99%" },
+        { "level": "ERROR", "timestamp": "2025-04-30 01:10:00", "message": "Disk is almost full" }
+    ],
+      "journalctl": [
+        { "level": "INFO", "timestamp": "2025-04-30 00:00:02", "message": "systemd[1]: Started Application Container." },
+        { "level": "INFO", "timestamp": "2025-04-30 00:00:07", "message": "kubelet[1234]: Pod 'app-pod-1' admitted: guaranteed resources" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:05:01", "message": "systemd[1]: Logrotate for app-container: started." },
+        { "level": "INFO", "timestamp": "2025-04-30 00:10:05", "message": "kernel: eth0: link up" },
+        { "level": "WARN", "timestamp": "2025-04-30 00:15:02", "message": "nginx[5678]: 10.0.0.1 - - [30/Apr/2025:00:15:02 +0000] \"GET / HTTP/1.1\" 200 612 \"-\" \"curl/7.68.0\"" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:20:03", "message": "systemd[1]: Mounted /var/lib/kubelet/pods/app-pod-1/volumes/kubernetes.io~csi/pvc-xxxx" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:25:01", "message": "redis[9101]: Ready to accept connections" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:30:02", "message": "prometheus[2345]: Server is ready to receive web requests." },
+        { "level": "INFO", "timestamp": "2025-04-30 00:35:05", "message": "crio[6789]: (app-container) Image is up to date: my-app:latest" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:40:01", "message": "systemd[1]: Reloading." },
+        { "level": "INFO", "timestamp": "2025-04-30 00:45:03", "message": "kubelet[1234]: MountVolume.SetUpAt succeeded for volume \"secret-volume\"" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:50:00", "message": "livenessprobe[3456]: Probe succeeded" },
+        { "level": "INFO", "timestamp": "2025-04-30 00:55:02", "message": "kube-controller-manager[23456]: Horizontal pod autoscaler controller started" },
+        { "level": "INFO", "timestamp": "2025-04-30 01:00:01", "message": "systemd[1]: Started Pod's втором container." },
+        { "level": "INFO", "timestamp": "2025-04-30 01:00:06", "message": "kubelet[1234]: Pod 'app-pod-2' admitted: guaranteed resources" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:01:01", "message": "systemd-journald[789]: /var/log/journal is 70% full, rotating journals." },
+        { "level": "INFO", "timestamp": "2025-04-30 01:02:02", "message": "app-container[4567]: Logged request" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:03:01", "message": "systemd-journald[789]: /var/log/journal is 75% full, rotating journals." },
+        { "level": "INFO", "timestamp": "2025-04-30 01:04:03", "message": "curl[1011]: (23) Failed writing body (0 != 16384)" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:05:01", "message": "systemd-journald[789]: /var/log/journal is 80% full, rotating journals." },
+        { "level": "INFO", "timestamp": "2025-04-30 01:06:02", "message": "app-container[4567]: Data processed successfully" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:07:01", "message": "systemd-journald[789]: /var/log/journal is 85% full, rotating journals." },
+        { "level": "INFO", "timestamp": "2025-04-30 01:08:01", "message": "postgresql[1213]: Checkpoint completed" },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:08:31", "message": "systemd-journald[789]: /var/log/journal is 90% full, rotating journals." },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:01", "message": "systemd-journald[789]: /var/log/journal is 92% full, rotating journals." },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:31", "message": "systemd-journald[789]: /var/log/journal is 95% full, rotating journals." },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:46", "message": "systemd-journald[789]: /var/log/journal is 97% full, rotating journals." },
+        { "level": "WARN",  "timestamp": "2025-04-30 01:09:51", "message": "systemd-journald[789]: /var/log/journal is 99% full, rotating journals." },
+        { "level": "ERROR", "timestamp": "2025-04-30 01:10:01", "message": "systemd-journald[789]: /var/log/journal: No space left on device" }
+      ],
+      "dmseg": [
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Initializing cgroup subsys cpuset" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Initializing cgroup subsys cpu" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Initializing cgroup subsys cpuacct" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Linux version 5.15.0-58-generic (buildd@lgw01-amd64-054) (gcc-11) #64~20.04.1-Ubuntu SMP Thu Jan 5 12:11:15 UTC 2023 (Ubuntu 5.15.0-58.64~20.04.1-generic 5.15.52)" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-5.15.0-58-generic root=UUID=0b1d7f41-a4a6-4c7e-9e2f-5d8d6d7d3b2e ro quiet splash" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] KERNEL supported cpus:" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Intel GenuineIntel" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] AMD AuthenticAMD" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Hygon HygonGenuine" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] Centaur CentaurHauls" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] zhaoxin Shanghai" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating point registers'" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] x86/fpu: Supporting XSAVE feature 0x002: 'SSE registers'" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] x86/fpu: Supporting XSAVE feature 0x004: 'AVX registers'" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:00", "message": "[    0.000000] x86/fpu: xstate_offset[2]: 576, xstate_sizes[2]: 256" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:04", "message": "[    4.453975] ena 0000:00:05.0: Elastic Network Adapter (ENA) found at mem febf4000, mac addr 02:78:f8:5b:74:0b" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:05", "message": "[    5.606395] random: lvm: uninitialized urandom read (4 bytes read)" },
+        { "level": "INFO", "timestamp": "2025-04-23 10:40:05", "message": "[    5.678    ] some more logs" }
+    
+      ]
+    }
+  },
+  "rootCauseSteps": [
+
+    {
+      "id": "2",
+      "title": "Lack of available disk space or inodes in the /tmp directory",
+      "description": "The error is likely caused by a lack of available disk space or inodes in the /tmp directory or its underlying filesystem.\n\n When the /tmp directory becomes full, either due to excessive data stored or a large number of small files consuming all inodes, the system is unable to create new temporary files. This results in IOExceptions during write attempts by services relying on /tmp, such as reporting jobs. Even if disk space appears sufficient, inode exhaustion can prevent file creation, leading to similar failures.",
+      "status": "in_progress",
+      "recommendedAction": "Clean the /tmp directory to ensure sufficient disk space and available inodes."
+    }
+
   ]
-}
+} 

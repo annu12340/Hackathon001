@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 import LogSourceSelector from './LogSourceSelector';
 import { cn } from '@/lib/utils';
 import LogSummary from './LogSummary';
@@ -11,6 +11,7 @@ interface LogsPanelProps {
 
 const LogsPanel: React.FC<LogsPanelProps> = ({ data }) => {
   const [activeSource, setActiveSource] = useState('kubectl');
+  const [showSummary, setShowSummary] = useState(true);
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -30,15 +31,27 @@ const LogsPanel: React.FC<LogsPanelProps> = ({ data }) => {
         <LogSummary data={data.logSummaryStats} />
       </div>
       
-      <LogSourceSelector activeSource={activeSource} onSourceChange={setActiveSource} />
+  
       
+      {/* Summary Logs Section */}
       <div className="mt-6 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <div className="bg-gray-50 py-3 px-4 border-b border-gray-100">
-          <h3 className="text-sm font-medium text-gray-700">
-            {activeSource === 'kubectl' ? 'Kubernetes Logs' : 
-             activeSource === 'var-logs' ? 'System Logs' : 'Database Logs'}
-          </h3>
-        </div>
+        <button
+          onClick={() => setShowSummary(!showSummary)}
+          className="w-full p-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+        >
+          <h2 className="text-lg font-medium text-gray-900">Log Summary</h2>
+          {showSummary ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+        {showSummary && (
+          <div className="p-4 max-h-[200px] overflow-y-auto text-sm border-t border-gray-100">
+            {data.logSummary}
+          </div>
+        )}
+      </div>
+      <br />
+      <LogSourceSelector activeSource={activeSource} onSourceChange={setActiveSource} />
+      {/* Detailed Logs Section */}
+      <div className="mt-6 bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <div className="p-4 max-h-[400px] overflow-y-auto font-mono text-sm">
           {data.logData[activeSource]?.map((log, idx) => (
             <div key={idx} className={cn(

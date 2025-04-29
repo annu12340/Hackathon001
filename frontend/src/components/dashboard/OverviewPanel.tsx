@@ -8,7 +8,18 @@ interface OverviewPanelProps {
 
 const OverviewPanel: React.FC<OverviewPanelProps> = ({ data }) => {
   // Default AI data for demo purposes
-  const aiData = data.aiGeneratedData 
+  const aiData = data.aiGeneratedData || {
+    confidence: 'N/A',
+    alertSummary: 'No summary available',
+    environment: 'N/A',
+    cluster: 'N/A',
+    nodeName: 'N/A',
+    errorType: 'N/A',
+    errorSeverity: 'N/A',
+    impactedComponent: 'N/A',
+    componentVersion: 'N/A',
+    platform: 'N/A'
+  };
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -207,9 +218,9 @@ const OverviewPanel: React.FC<OverviewPanelProps> = ({ data }) => {
               <div className="bg-blue-50 p-1.5 rounded text-blue-500">
                 <Clock size={16} />
               </div>
-              <h3 className="text-sm font-semibold text-gray-700">First Detected</h3>
+              <h3 className="text-sm font-semibold text-gray-700">Platform</h3>
             </div>
-            <p className="text-gray-900 font-medium ml-1">{aiData.firstDetected}</p>
+            <p className="text-gray-900 font-medium ml-1">{aiData.platform}</p>
           </div>
         </div>
 

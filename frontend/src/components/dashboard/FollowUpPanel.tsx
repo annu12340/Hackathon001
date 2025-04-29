@@ -27,7 +27,6 @@ const FollowUpPanel: React.FC<FollowUpPanelProps> = ({ data }) => {
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter(t => t.completed).length;
   const highPriorityTasks = tasks.filter(t => t.priority === 'high' && !t.completed).length;
-  const yourTasks = tasks.filter(t => t.assignee === 'You' && !t.completed).length;
   const progressPercentage = Math.round((completedTasks / totalTasks) * 100) || 0;
 
   return (
@@ -60,15 +59,12 @@ const FollowUpPanel: React.FC<FollowUpPanelProps> = ({ data }) => {
             <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-indigo-500 transition-colors duration-200" />
           </div>
           
-          <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-sm transition-colors">
-            <PlusCircle size={16} />
-            <span className="text-sm font-medium">Add Task</span>
-          </button>
+
         </div>
       </div>
       
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {[
           {
             title: "Total Tasks",
@@ -88,12 +84,7 @@ const FollowUpPanel: React.FC<FollowUpPanelProps> = ({ data }) => {
             icon: <Check size={18} />,
             color: "green"
           },
-          {
-            title: "Your Tasks",
-            value: yourTasks,
-            icon: <Users size={18} />,
-            color: "blue"
-          }
+  
         ].map((stat, index) => (
           <Card key={index} className={`border-${stat.color}-100 bg-gradient-to-r from-${stat.color}-50 to-white shadow-sm hover:shadow transition-all duration-200`}>
             <CardContent className="p-4 flex items-center justify-between">
@@ -187,14 +178,10 @@ const FollowUpPanel: React.FC<FollowUpPanelProps> = ({ data }) => {
                   
                   <div className="flex flex-wrap gap-4 mt-1 text-xs text-gray-500">
                     <div className="flex items-center gap-1">
-                      <Clock size={14} className="text-gray-400" />
-                      <span>Due: {task.dueDate}</span>
+                   
+                      <span> {task.description}</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Users size={14} className="text-gray-400" />
-                      <span>Assignee: {task.assignee}</span>
-                    </div>
-           
+
                   </div>
                 </div>
               </div>

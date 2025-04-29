@@ -2,15 +2,52 @@
   "remediationSteps": [
     {
       "id": "1",
-      "title": "kubectl get node lima-rancher-desktop -o wide",
-      "description": "E0428 23:35:10.837178   14858 memcache.go:265] \"Unhandled Error\" err=\"couldn't get current server API group list: Get \\\"https://127.0.0.1:6443/api?timeout=32s\\\": dial tcp 127.0.0.1:6443: connect: connection refused\"\nE0428 23:35:10.839073   14858 memcache.go:265] \"Unhandled Error\" err=\"couldn't get current server API group list: Get \\\"https://127.0.0.1:6443/api?timeout=32s\\\": dial tcp 127.0.0.1:6443: connect: connection refused\"\nE0428 23:35:10.840572   14858 memcache.go:265] \"Unhandled Error\" err=\"couldn't get current server API group list: Get \\\"https://127.0.0.1:6443/api?timeout=32s\\\": dial tcp 127.0.0.1:6443: connect: connection refused\"\nE0428 23:35:10.842021   14858 memcache.go:265] \"Unhandled Error\" err=\"couldn't get current server API group list: Get \\\"https://127.0.0.1:6443/api?timeout=32s\\\": dial tcp 127.0.0.1:6443: connect: connection refused\"\nE0428 23:35:10.843446   14858 memcache.go:265] \"Unhandled Error\" err=\"couldn't get current server API group list: Get \\\"https://127.0.0.1:6443/api?timeout=32s\\\": dial tcp 127.0.0.1:6443: connect: connection refused\"\nThe connection to the server 127.0.0.1:6443 was refused - did you specify the right host or port?",
-      "status": "error"
+      "title": "SSH into Node",
+      "description": "SSH into the affected node using: ssh <node-name>",
+      "status": "completed"
     },
     {
       "id": "2",
-      "title": "systemctl status kubelet",
-      "description": "/bin/sh: systemctl: command not found",
-      "status": "error"
+      "title": "Check Disk Usage",
+      "description": "Run 'df -h' and examine /var, /var/lib",
+      "status": "completed"
+    },
+    {
+      "id": "3",
+      "title": "Locate Large Directories",
+      "description": "Use 'du -sh /* | sort -h' to identify directories using the most disk space.",
+      "status": "completed"
+    },
+    {
+      "id": "4",
+      "title": "Clean Unused Container Images",
+      "description": "For containerd: 'sudo crictl rmi --prune'. For Docker: 'docker system prune -af'.",
+      "status": "completed"
+    },
+    {
+      "id": "5",
+      "title": "Vacuum Systemd Journal Logs",
+      "description": "Run 'sudo journalctl --vacuum-time=3d' to clean old logs. Adjust time as per retention policy.",
+      "status": "completed"
+    },
+    {
+      "id": "6",
+      "title": "Remove Orphaned Pod Directories",
+      "description": "Run 'sudo du -sh /var/lib/kubelet/pods/* | sort -h'. Manually remove unused directories after verification.",
+      "status": "completed"
+    },
+    {
+      "id": "7",
+      "title": "Clear Temporary Directories",
+      "description": "Clear space using 'sudo rm -rf /tmp/*' and 'sudo rm -rf /var/tmp/*'.",
+      "status": "completed"
+    },
+    {
+      "id": "8",
+      "title": " Reboot",
+      "description": "Reboot the node if disk pressure persists to reclaim mounts and temp allocations.",
+      "status": "pending"
     }
   ]
-}
+  
+} 
