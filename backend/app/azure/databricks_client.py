@@ -1,10 +1,14 @@
 import os
+import sys
 import logging
 import requests
 import json
 import subprocess
+import asyncio
 from typing import Dict, List, Tuple
 from dotenv import load_dotenv
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from utils.log_collector import LogCollector
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,6 +28,7 @@ class DatabricksTriageClient:
             'Content-Type': 'application/json'
         }
         self.command_timeout = 300
+        self.log_collector = LogCollector()
         logger.info("Initialized DatabricksTriageClient")
     
     def create_request_data(self, message: str) -> Dict:
@@ -79,32 +84,65 @@ class DatabricksTriageClient:
             logger.error(f"Error getting triage steps: {str(e)}")
             raise
 
-    def analyze_triage_steps(self, platform: str, steps: List[str]) -> Dict:
-        """Analyze triage steps using Azure Databricks."""
+    def get_logs(self, cluster: str, node_id: str, log_type: str = "all", time_range: str = "last_hour") -> Dict:
+        """
+        Collect logs based on the platform type.
+        """
         try:
-            message = f"""
-            Analyze the following triage steps for {platform} platform:
-            {json.dumps(steps)}
+            logger.info(f"Collecting logs for node {node_id} in cluster {cluster}")
             
-            Provide:
-            1. Risk assessment for each step
-            2. Expected outcome
-            3. Potential failure scenarios
-            4. Recovery steps if something goes wrong
+            # Determine the number of lines to collect based on time range
+            lines = 100
+            if time_range == "last_day":
+                lines = 1000
+            elif time_range == "last_week":
+                lines = 5000
+                
+            # Collect logs using the LogCollector
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
             
-            Format the response as JSON.
-            """
+            # Collect system info and logs
+            diagnostics = loop.run_until_complete(
+                self.log_collector.collect_all_diagnostics(node_id)
+            )
             
-            response = self.score_model(message)
-            raw_string = response['messages'][0]['content']
-            json_string = raw_string.strip("`json\n").rstrip("`")
-            analysis = json.loads(json_string)
+            # Filter logs based on log_type if needed
+            if log_type != "all":
+                filtered_logs = {}
+                for log_file, content in diagnostics.get("logs", {}).items():
+                    if log_type in log_file.lower():
+                        filtered_logs[log_file] = content
+                diagnostics["logs"] = filtered_logs
             
-            logger.info(f"Step analysis completed for {platform} with analysis: {analysis}")
-            return analysis
+            logger.info(f"Successfully collected logs for node {node_id}")
+            return diagnostics
             
         except Exception as e:
-            logger.error(f"Error analyzing steps: {str(e)}")
+            logger.error(f"Error collecting logs: {str(e)}")
+            raise
+
+    def get_and_analyze_logs(self, cluster: str, node_id: str, platform: str,  time_range: str = "last_hour") -> Dict:
+        """
+        Get and analyze logs for a specific node.
+        """
+        try:
+            # Collect logs
+            logs = self.get_logs(cluster, node_id,time_range)
+            
+            # Create a message for the Databricks API
+            message = f"""
+            Logs: {logs}
+            """
+            
+            # Call the Databricks API
+            response = self.score_model(message)
+            result = response['messages'][0]['content']
+            logger.info(f"Successfully analyzed logs for node {node_id} with result {result}")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error analyzing logs: {str(e)}")
             raise
 
     def execute_triage_step(self, platform: str, step: str) -> Dict:
@@ -170,20 +208,23 @@ class DatabricksTriageClient:
     def orchestrate_triage(self,cluster,node_id,triage_steps) -> Dict:
         """Orchestrate the entire triage process."""
         results = {}
-        
-        for platform, steps in triage_steps.items():
-            platform_results = []
-            # Execute steps sequentially
-            for step in steps:
-                result = self.execute_triage_step(platform, step)
-                platform_results.append(result)
-                
+
+        # Execute steps sequentially
+        for step in triage_steps:
+                if step.get("risk_percentage") < 20:
+                    result = self.execute_triage_step(step)
+                else:
+                    result = {
+                        "status": "pending_approval",
+                        "message": "High-risk command requires manual approval",
+                        "step": step,
+                        "analysis": step
+                    }
                 # If a step fails, stop execution for this platform
                 if result["status"] == "error":
-                    logger.error(f"Stopping execution for {platform} due to error")
                     break
-                    
-            results[platform] = {
-                "steps_results": platform_results}
-            
-        return results 
+        return results
+
+
+a=DatabricksTriageClient()
+a.get_and_analyze_logs("lima-rancher-desktop","lima-rancher-desktop","k8s")

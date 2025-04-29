@@ -140,20 +140,20 @@ class IncidentManager:
                 incident_dic = self.pd_client.get_incident(incident_id)
 
             if incident_dic:
+
+                await self.update_status(channel, message_ts, steps_done=2, 
+                                   current_step="Analyzing alert", 
+                                   thread_ts=thread_ts)
                 summary = self.azure_openai.summarize_pagerduty_alert(incident_dic)
                 summarized_pd_alert = self.pd_client.format_incident_details(summary)
                 print("detailed message is", summarized_pd_alert)
             else:
                 return
 
-            await self.update_status(channel, message_ts, steps_done=2, 
-                                   current_step="Analyzing alert", 
-                                   thread_ts=thread_ts)
-            await asyncio.sleep(2)
-            
             await self.update_status(channel, message_ts, steps_done=3, 
                                    current_step="Fetching the appropriate logs", 
                                    thread_ts=thread_ts)
+            self.databricks_client.get_and_analyze_logs(cluster,node_id,summary.get("platform"))
             await asyncio.sleep(2)
             
             await self.update_status(channel, message_ts, steps_done=4, 

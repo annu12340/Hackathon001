@@ -49,7 +49,6 @@ class PagerDutyClient:
         """
         Format the incident summary dict into a Slack-friendly message.
         """
-        print("Summary is", summary)
         return (
             f"*Status:* {summary.get('Status', 'N/A')}\n"
             f"*Urgency:* {summary.get('Urgency', 'N/A')}\n"
