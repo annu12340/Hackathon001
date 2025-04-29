@@ -130,17 +130,15 @@ class IncidentManager:
             channel = initial_message['channel']
             
             # Step 1: Check if this is a PagerDuty incident and get details if it is
+            await self.update_status(channel, message_ts, steps_done=1, 
+                                       current_step="Getting pagerduty alert info", 
+                                       thread_ts=thread_ts)
             incident_id = "Q3TAMBYDY6HQI4"  # This should be extracted from text
             if incident_id:
                 logger.info(f"Found PagerDuty incident ID: {incident_id}")
-                await self.update_status(channel, message_ts, steps_done=1, 
-                                       current_step="Getting pagerduty alert info", 
-                                       thread_ts=thread_ts)
-                
                 incident_dic = self.pd_client.get_incident(incident_id)
 
             if incident_dic:
-
                 await self.update_status(channel, message_ts, steps_done=2, 
                                    current_step="Analyzing alert", 
                                    thread_ts=thread_ts)
@@ -153,7 +151,7 @@ class IncidentManager:
             await self.update_status(channel, message_ts, steps_done=3, 
                                    current_step="Fetching the appropriate logs", 
                                    thread_ts=thread_ts)
-            self.databricks_client.get_and_analyze_logs(cluster,node_id,summary.get("platform"))
+            log_result=self.databricks_client.get_and_analyze_logs(cluster,node_id,summary.get("platform"))
             await asyncio.sleep(2)
             
             await self.update_status(channel, message_ts, steps_done=4, 
@@ -161,26 +159,23 @@ class IncidentManager:
                                    thread_ts=thread_ts)
             cluster="lima-rancher-desktop"
             node_id = "lima-rancher-desktop"
-            triage_steps = self.databricks_client.get_triage_steps(cluster,node_id,summarized_pd_alert)
-            print("Triage steps are", triage_steps)
-            await asyncio.sleep(2)
             await self.update_status(channel, message_ts, steps_done=5, 
                                    current_step="Getting the remediation steps", 
                                    thread_ts=thread_ts)
-
-            results = await self.databricks_client.orchestrate_triage(cluster,node_id,triage_steps)
+            triage_steps = self.databricks_client.get_triage_steps(cluster,node_id,summarized_pd_alert,log_result)
             await asyncio.sleep(2)
-            
+
             await self.update_status(channel, message_ts, steps_done=6, 
                                    current_step="Running diagnostics", 
                                    thread_ts=thread_ts)
             
+            results = await self.databricks_client.orchestrate_triage(cluster,node_id,triage_steps)
+            await asyncio.sleep(2)
+            
             await self.file_manager.update_incident_files(incident_id, incident_dic, results)
             
             result = await self.send_results(results, node_id, thread_ts, say)
-            await self.update_status(channel, message_ts, steps_done=7, 
-                                   current_step="Formatting results", 
-                                   thread_ts=thread_ts)
+
             
             detailed_analysis_url = f"http://localhost:3000/{incident_id}"
             final_message = f"""

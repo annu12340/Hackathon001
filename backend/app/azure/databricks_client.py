@@ -68,11 +68,12 @@ class DatabricksTriageClient:
             logger.error(f"Error in score_model: {str(e)}")
             raise
 
-    def get_triage_steps(self, cluster: str, node_id: str, summarized_pd_alert) -> Dict[str, List[str]]:
+    def get_triage_steps(self, cluster: str, node_id: str, summarized_pd_alert, logs) -> Dict[str, List[str]]:
         """Fetch triage steps from Databricks for a specific node."""
         try:
             message = f"""
             PagerDuty: {summarized_pd_alert}
+            Log summary: {logs.get('issue_found_in_logs')}
             """
             response = self.score_model(message)
             raw_string = response['messages'][0]['content']
@@ -129,37 +130,22 @@ class DatabricksTriageClient:
         try:
             # Collect logs
             logs = self.get_logs(cluster, node_id,time_range)
-            
             # Create a message for the Databricks API
-            message = f"""
-            Logs: {logs}
-            """
-            
+            message = f""" Logs: {logs} """
+
             # Call the Databricks API
             response = self.score_model(message)
             result = response['messages'][0]['content']
             logger.info(f"Successfully analyzed logs for node {node_id} with result {result}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Error analyzing logs: {str(e)}")
             raise
 
-    def execute_triage_step(self, platform: str, step: str) -> Dict:
+    def execute_triage_step(self,step: str) -> Dict:
         """Execute a single triage step with safety checks."""
         try:
-            # Analyze the step before execution
-            analysis = self.analyze_triage_steps(platform, [step])
-            
-            # If risk is too high, require manual approval
-            if analysis.get("risk_level") == "high":
-                return {
-                    "status": "pending_approval",
-                    "message": "High-risk command requires manual approval",
-                    "step": step,
-                    "analysis": analysis
-                }
-            
             # Execute the command
             logger.info(f"Executing step: {step}")
             try:
@@ -176,15 +162,13 @@ class DatabricksTriageClient:
                     "status": "success",
                     "message": "Step executed successfully",
                     "step": step,
-                    "output": output,
-                    "analysis": analysis
+                    "output": output
                 }
             except subprocess.TimeoutExpired:
                 return {
                     "status": "error",
                     "message": f"Command timed out after {self.command_timeout} seconds",
                     "step": step,
-                    "analysis": analysis
                 }
             except subprocess.CalledProcessError as e:
                 error_msg = e.stderr.decode('utf-8').strip() if e.stderr else "Command failed with no error message"
@@ -194,7 +178,7 @@ class DatabricksTriageClient:
                     "step": step,
                     "output": e.stdout.decode('utf-8').strip() if e.stdout else "",
                     "error": error_msg,
-                    "analysis": analysis
+   
                 }
             
         except Exception as e:
@@ -210,9 +194,11 @@ class DatabricksTriageClient:
         results = {}
 
         # Execute steps sequentially
-        for step in triage_steps:
-                if step.get("risk_percentage") < 20:
-                    result = self.execute_triage_step(step)
+        for step in triage_steps.get('actions'):
+                command=step.get('command')
+                risk=step.get('risk')
+                if risk == "low" or risk == "medium":
+                    result = self.execute_triage_step(command)
                 else:
                     result = {
                         "status": "pending_approval",
@@ -227,4 +213,5 @@ class DatabricksTriageClient:
 
 
 a=DatabricksTriageClient()
-a.get_and_analyze_logs("lima-rancher-desktop","lima-rancher-desktop","k8s")
+steps={'summary': "The system is unable to write to the temporary directory, which may be due to a permissions issue or lack of available space. The logs also indicate a failure to resolve the hostname 'lima-rancher-desktop' when attempting to connect via SSH, suggesting a potential issue with DNS resolution or the hostname configuration. Check the permissions and available space of the temporary directory, and verify the DNS resolution and hostname configuration.", 'actions': [{'command': 'df -h /tmp', 'risk': 'low'}, {'command': 'ls -ld /tmp', 'risk': 'low'}, {'command': 'ssh -v user@lima-rancher-desktop', 'risk': 'medium'}, {'command': 'dig +short lima-rancher-desktop', 'risk': 'low'}, {'command': 'getent hosts lima-rancher-desktop', 'risk': 'low'}]}
+a.orchestrate_triage("lima-rancher-desktop","lima-rancher-desktop",steps)
