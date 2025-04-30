@@ -3,36 +3,41 @@
 Kasper is an AI-powered incident management system that automates and streamlines the incident response lifecycle.
 
 ## Table of Contents
-- [Project Overview](#project-overview)
+- [📋 Project Overview](#project-overview)
   - [Problem Statement](#problem-statement)
   - [Solution](#solution)
   - [Key Features](#key-features)
-- [Technical Implementation](#technical-implementation)
+- [⚙️ Technical Implementation](#technical-implementation)
   - [Architecture](#architecture)
   - [Tech Stack](#tech-stack)
   - [Flow of Events](#flow-of-events)
   - [AI Agents](#ai-agents)
-- [Project Details](#project-details)
+- [📊 Project Details](#project-details)
+  - [Submission Details](#submission-details)
   - [Repository](#repository)
   - [Team](#team)
   - [Demo](#demo)
-- [Impact & Benefits](#impact--benefits)
+- [📈 Impact & Benefits](#impact--benefits)
   - [Cost Savings](#cost-savings)
   - [Efficiency Gains](#efficiency-gains)
-- [Development](#development)
+- [🎯 Judging Criteria](#how-kasper-fits-the-judging-criteria)
+  - [Innovation](#innovation)
+  - [Impact](#impact)
+  - [Usability](#usability)
+  - [Solution Quality](#solution-quality)
+  - [Hackathon Alignment](#alignment-with-hackathon-category)
+- [💻 Development](#development)
   - [Code Structure](#code-structure)
-- [Setup & Configuration](#setup--configuration)
+  - [Frontend Structure](#frontend-structure)
+  - [Backend Structure](#backend-structure)
+  - [Key Components](#key-components)
+- [🔧 Setup & Configuration](#setup--configuration)
   - [Prerequisites](#prerequisites)
   - [Environment Setup](#environment-setup)
   - [Environment Variables](#environment-variables)
 
-## Inspiration 💡
-We've all been there. The dreaded 3 AM wake-up call, the heart-sinking realization of a system failure, the frantic scramble to find the signal in the deafening noise of alerts. It's a universal truth in IT: systems fail. The soul-crushing uncertainty of whether that page signifies a critical meltdown or just another false alarm, the hours lost manually piecing together fragmented data, the relentless pressure to restore services now – it's a recipe for burnout, costly downtime, and a constant state of reactive firefighting.
-
-Born from the crucible of this shared frustration, Kasper: The AI Incident Commander emerges as the autonomous driving system for your IT infrastructure. We're not just offering another monitoring tool; we're orchestrating a proactive, intelligent revolution in incident response, silencing the 3 AM symphony of system failures and turning reactive firefighting into calm, efficient command.
-
-## Submission details
-### Language & Framework
+### Submission details
+#### Language & Framework
 
 - [x] Python
 - [ ] C#
@@ -42,25 +47,27 @@ Born from the crucible of this shared frustration, Kasper: The AI Incident Comma
 - [ ] Microsoft 365 Agents SDK
 - [x] Azure AI Agent Service
 
-### Project Repository URL
+#### Project Repository URL
 
 https://github.com/annu12340/Hackathon001
 
-### Project Video
+#### Project Video
 
 [Demo video](https://youtu.be/8RMWyVQAzR8)
 
-### Deployed endpoint
+#### Deployed endpoint
 
 https://kasper-response.framer.website/
 
-### Team Members
+#### Team Members
 
 annu12340, armgp 
 
 Contact email: annujolly@gmail.com, arm.gp23@gmail.com
 
-## Problem Statement
+## 📋 Project Overview
+
+### Problem Statement
 Modern IT systems, while incredibly powerful, are also incredibly complex, a labyrinth of interconnected services and dependencies. This complexity translates into a torrential flood of data, making it nearly impossible for human engineers to effectively manage incidents at scale. The problem is multifaceted, a hydra-headed challenge that demands a new approach:
 
 - Alert Fatigue: On-call engineers are bombarded with a relentless barrage of alerts, many of which are false positives, low-priority notifications, or simply noise. This constant bombardment leads to alert fatigue
@@ -72,7 +79,7 @@ Modern IT systems, while incredibly powerful, are also incredibly complex, a lab
 - Delayed Resolution: The combined effect of alert fatigue, context scarcity, and manual diagnostics results in prolonged incident resolution times, increased downtime, and significant business disruption. Every minute of downtime translates to lost revenue, lost productivity, and damaged reputation.
 
 
-## Solution
+### Solution
 Kasper isn't just another monitoring tool; it's your AI-powered incident commander, automating and streamlining the entire incident lifecycle. By integrating seamlessly with alerting platforms like PagerDuty, communication hubs like Slack and the power of azure AI gents, Kasper provides a unified, context-rich, and actionable approach to incident management. 
 
 At its core, Kasper harnesses the power of Large Language Models (LLMs) to transcend mere alerting. It understands the incident's narrative, diagnoses the underlying problem with machine precision, prescribes the optimal solution – significantly reducing MTTR and paving the way for truly resilient systems. 
@@ -87,7 +94,7 @@ At its core, Kasper harnesses the power of Large Language Models (LLMs) to trans
 - Comprehensive incident tracking and history
 
 
-## Flow of events
+## Flow of Events
 
 ![Alt text](https://i.ibb.co/k2LtYHXR/Flow-of-events-visual-selection.png)
 
@@ -115,13 +122,14 @@ At its core, Kasper harnesses the power of Large Language Models (LLMs) to trans
 
 12. Confirmation and Follow-up: After attempting remediation, Kasper posts a confirmation message in Slack, detailing the actions taken and the outcome. It may also suggest potential follow-up actions  based on the incident.
 
-## Technical details
 
-### Architecutural diagram
+## ⚙️ Technical Implementation
+
+### Architecture
 
 ![Text](https://media-hosting.imagekit.io/445649bdad484c49/diagram-export-30-04-2025-08_46_52.png?Expires=1840600831&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=D~qhF8vNgoXHnd0OEEnhv-O-sfd7eHQ2RH3uiGvIgFFI1dGB82QVwcqahYw9gT12BJnaeWvpd99AeRtSuXCtXUOrvK02vpcG0nU-SMsh3mGuPGgm2V5grSO0kPLMlQi-v5kfNFlY51hOGAnmIi9cXq8MZqlF9iRTCDcbfEzfPPwXkI9Nv4vxqP6ZfK--r8KHaiwsypkt85~QFhqkWD2NK~rdfkNTFiad9bfma~i7-bjW8WisA-SgQFrpgQf3P5KuDZQZPefF1HMV2766SWlc9B5geaN7FHy0s~GWH1vc~XGVVMW-9hR1SIc-1M0VttuuZ5Ri5pwvJsClzFt2gUQCjQ__)
 
-### Tech stack
+### Tech Stack
 - Frontend:
   - React 18
   - TypeScript
@@ -144,11 +152,9 @@ At its core, Kasper harnesses the power of Large Language Models (LLMs) to trans
     - PagerDuty (for incident management)
     - Azure cosmos db
 
-### Flow diagram
 ![text](https://media-hosting.imagekit.io/2c23e4a6cadd4fd0/diagram-export-30-04-2025-08_34_01.png?Expires=1840600837&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=qrZkLpL6R0BlBBM6VvdVknJc6gfQvZXd7PIutq50r5iof8Qkus5icQwF8enUtvgLVFR8ZL~wB3uwSWJ1GIiSohqYyzLQWMyXBsI-13XXhGw1daNeE8D4gi3iNCbriPRGwsAyfTl9xXkVdk5rV83x0jW57KobxeeVF7l6QXMw3EDXaPHur12dm7LzCyCMHV20dDC4afy-4UDAf-PmA9VUAdZTtgUDID0QrvgqAUsc-aoRVjj~ZCDaYl3ql~7aItmjCOQdwcs60DSM3ipL4FTcDCvG3av22h~w1B3L4iiPh9uml0rdx9cXlrWt1A5MPHRqUiIBVZnush5SJqmyXcGTQg__)
 
-
-### Interaction of AI agents in azure databricks
+### AI Agents interact in azure databricks
 
 ![test](https://media-hosting.imagekit.io/11db7186ca1c4a70/kasper.jpeg?Expires=1840600767&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BGJWOBzqTRSiZbErf7KHndp7pN0~oZVWRYhERQBxdb5nbdiYQX54hID~8IZWGpkIfP~Tm03uw7lLvZDdjlvcOUANaIeXCt6NBiC~1JoeCGFatkqQGFxa326VZD2YPU-4nJ71hQ9okO-yIqWVVvM7e3RzO~dzLFjMh9-4kKXvFofxTQDwIz7naHiEjL2qU1jvnYQ3O0eH4CaQvhtuvub-z8IHFL5n7se4~XOALoNOM~C65X0rIRhiBvNwKnZQcz~x2lAkj0q6mgtIxpMvzhDSDupY7OQPBYkEwn5-2-YL6bZPFt7Dn3W9qtr39rwOjC4rXI3VNL3XYO89b6qJu0UagQ__)
 
@@ -160,6 +166,7 @@ We choose to use azure databricks instead of other azure AI services like semant
 - Cost Efficiency of Azure Databricks for Large Data: For high-volume log summarization, Azure Databricks on Azure offers a more cost-effective solution compared to repeatedly feeding large log chunks to LLM APIs through other frameworks.
 - Direct Large File Handling in Azure Databricks: Azure Databricks is architected to directly ingest and process entire large log files stored within Azure, avoiding the need for manual chunking often required by agent frameworks.
 - Azure Databricks' Powerful Pre-processing on Azure: Running on Azure, Azure Databricks provides a robust environment for cleaning, structuring, and extracting key insights from raw Azure-stored logs before generating concise summaries.
+
 
 
 ## Impact
@@ -312,7 +319,7 @@ backend/
   - Azure Cosmos DB: Data persistence
   - Azure Vector Search: Runbook retrieval
 
-## Setup & Configuration
+## 🔧 Setup & Configuration
 
 ### Prerequisites
 - Node.js 18+
@@ -337,7 +344,7 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-## Environment Variables
+### Environment Variables
 
 ### Required Variables
 ```bash
