@@ -1,42 +1,37 @@
 # 🚀  Kasper: The AI Incident Commander 
 
+Kasper is an AI-powered incident management system that automates and streamlines the incident response lifecycle.
+
 ## Table of Contents
-- [Inspiration](#inspiration-)
-- [Language & Framework](#language--framework)
-- [Project Repository](#project-repository-url)
-- [Project Video](#project-video)
-- [Deployed Endpoint](#deployed-endpoint)
-- [Team Members](#team-members)
-- [Problem Statement](#problem-statement)
-- [Solution](#solution)
-- [Flow of Events](#flow-of-events)
-- [Technical Details](#technical-details)
-  - [Architectural Diagram](#architecutural-diagram)
+- [Project Overview](#project-overview)
+  - [Problem Statement](#problem-statement)
+  - [Solution](#solution)
+  - [Key Features](#key-features)
+- [Technical Implementation](#technical-implementation)
+  - [Architecture](#architecture)
   - [Tech Stack](#tech-stack)
-  - [Flow Diagram](#flow-diagram)
-  - [AI Agents Interaction](#interaction-of-ai-agents-in-azure-databricks)
-- [Impact](#impact)
-- [Judging Criteria](#how-kasper-fits-the-judging-criteria)
-- [Code Structure](#code-structure)
-  - [Frontend Structure](#frontend-structure)
-  - [Backend Structure](#backend-structure)
-  - [Key Components](#key-components)
-- [Frontend](#frontend)
-  - [Setup and Running](#setup-and-running)
-- [Backend](#backend)
-  - [Environment Setup](#environment-setup)
-  - [Features](#features)
-  - [Flow of Events](#flow-of-events-1)
-  - [Detailed Flow Explanation](#detailed-flow-explanation)
+  - [Flow of Events](#flow-of-events)
+  - [AI Agents](#ai-agents)
+- [Project Details](#project-details)
+  - [Repository](#repository)
+  - [Team](#team)
+  - [Demo](#demo)
+- [Impact & Benefits](#impact--benefits)
+  - [Cost Savings](#cost-savings)
+  - [Efficiency Gains](#efficiency-gains)
 - [Development](#development)
+  - [Code Structure](#code-structure)
+- [Setup & Configuration](#setup--configuration)
   - [Prerequisites](#prerequisites)
+  - [Environment Setup](#environment-setup)
+  - [Environment Variables](#environment-variables)
 
 ## Inspiration 💡
 We've all been there. The dreaded 3 AM wake-up call, the heart-sinking realization of a system failure, the frantic scramble to find the signal in the deafening noise of alerts. It's a universal truth in IT: systems fail. The soul-crushing uncertainty of whether that page signifies a critical meltdown or just another false alarm, the hours lost manually piecing together fragmented data, the relentless pressure to restore services now – it's a recipe for burnout, costly downtime, and a constant state of reactive firefighting.
 
 Born from the crucible of this shared frustration, Kasper: The AI Incident Commander emerges as the autonomous driving system for your IT infrastructure. We're not just offering another monitoring tool; we're orchestrating a proactive, intelligent revolution in incident response, silencing the 3 AM symphony of system failures and turning reactive firefighting into calm, efficient command.
 
-
+## Submission details
 ### Language & Framework
 
 - [x] Python
@@ -63,6 +58,8 @@ https://kasper-response.framer.website/
 
 annu12340, armgp 
 
+Contact email: annujolly@gmail.com, arm.gp23@gmail.com
+
 ## Problem Statement
 Modern IT systems, while incredibly powerful, are also incredibly complex, a labyrinth of interconnected services and dependencies. This complexity translates into a torrential flood of data, making it nearly impossible for human engineers to effectively manage incidents at scale. The problem is multifaceted, a hydra-headed challenge that demands a new approach:
 
@@ -79,6 +76,16 @@ Modern IT systems, while incredibly powerful, are also incredibly complex, a lab
 Kasper isn't just another monitoring tool; it's your AI-powered incident commander, automating and streamlining the entire incident lifecycle. By integrating seamlessly with alerting platforms like PagerDuty, communication hubs like Slack and the power of azure AI gents, Kasper provides a unified, context-rich, and actionable approach to incident management. 
 
 At its core, Kasper harnesses the power of Large Language Models (LLMs) to transcend mere alerting. It understands the incident's narrative, diagnoses the underlying problem with machine precision, prescribes the optimal solution – significantly reducing MTTR and paving the way for truly resilient systems. 
+
+
+### Key Features
+- Real-time incident detection and analysis
+- Automated log processing and summarization
+- Intelligent remediation recommendations
+- Risk-based action execution
+- Human-in-the-loop approval for critical actions
+- Comprehensive incident tracking and history
+
 
 ## Flow of events
 
@@ -116,12 +123,15 @@ At its core, Kasper harnesses the power of Large Language Models (LLMs) to trans
 
 ### Tech stack
 - Frontend:
-    - React
-    - TypeScript
-    - Vite 
+  - React 18
+  - TypeScript
+  - Vite
+  - TailwindCSS
+  - Axios for API calls
 
 - Backend:
-    - Python
+  - Python 
+  - Azure SDKs for service integration
 
 - Microsoft Azure Services:
     - Azure AI Agents using azure Databricks
@@ -132,6 +142,7 @@ At its core, Kasper harnesses the power of Large Language Models (LLMs) to trans
 - Integration Services:
     - Slack (for communication)
     - PagerDuty (for incident management)
+    - Azure cosmos db
 
 ### Flow diagram
 ![text](https://media-hosting.imagekit.io/2c23e4a6cadd4fd0/diagram-export-30-04-2025-08_34_01.png?Expires=1840600837&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=qrZkLpL6R0BlBBM6VvdVknJc6gfQvZXd7PIutq50r5iof8Qkus5icQwF8enUtvgLVFR8ZL~wB3uwSWJ1GIiSohqYyzLQWMyXBsI-13XXhGw1daNeE8D4gi3iNCbriPRGwsAyfTl9xXkVdk5rV83x0jW57KobxeeVF7l6QXMw3EDXaPHur12dm7LzCyCMHV20dDC4afy-4UDAf-PmA9VUAdZTtgUDID0QrvgqAUsc-aoRVjj~ZCDaYl3ql~7aItmjCOQdwcs60DSM3ipL4FTcDCvG3av22h~w1B3L4iiPh9uml0rdx9cXlrWt1A5MPHRqUiIBVZnush5SJqmyXcGTQg__)
@@ -140,6 +151,16 @@ At its core, Kasper harnesses the power of Large Language Models (LLMs) to trans
 ### Interaction of AI agents in azure databricks
 
 ![test](https://media-hosting.imagekit.io/11db7186ca1c4a70/kasper.jpeg?Expires=1840600767&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BGJWOBzqTRSiZbErf7KHndp7pN0~oZVWRYhERQBxdb5nbdiYQX54hID~8IZWGpkIfP~Tm03uw7lLvZDdjlvcOUANaIeXCt6NBiC~1JoeCGFatkqQGFxa326VZD2YPU-4nJ71hQ9okO-yIqWVVvM7e3RzO~dzLFjMh9-4kKXvFofxTQDwIz7naHiEjL2qU1jvnYQ3O0eH4CaQvhtuvub-z8IHFL5n7se4~XOALoNOM~C65X0rIRhiBvNwKnZQcz~x2lAkj0q6mgtIxpMvzhDSDupY7OQPBYkEwn5-2-YL6bZPFt7Dn3W9qtr39rwOjC4rXI3VNL3XYO89b6qJu0UagQ__)
+
+### Why azure databricks
+
+We choose to use azure databricks instead of other azure AI services like semantic kernel, foundry etc because of the following reaons
+- Azure Databricks' Scalable Spark Engine: Azure Databricks, leveraging its distributed Apache Spark engine within the Azure ecosystem, can efficiently process terabytes of logs in parallel – a scale unmatched by individual agent frameworks.
+- Azure Databricks' Optimized Summarization Tools: Azure Databricks provides built-in, optimized functions and libraries within the Azure environment specifically for data aggregation, filtering, and transformation – crucial pre-processing steps for effective log summarization.
+- Cost Efficiency of Azure Databricks for Large Data: For high-volume log summarization, Azure Databricks on Azure offers a more cost-effective solution compared to repeatedly feeding large log chunks to LLM APIs through other frameworks.
+- Direct Large File Handling in Azure Databricks: Azure Databricks is architected to directly ingest and process entire large log files stored within Azure, avoiding the need for manual chunking often required by agent frameworks.
+- Azure Databricks' Powerful Pre-processing on Azure: Running on Azure, Azure Databricks provides a robust environment for cleaning, structuring, and extracting key insights from raw Azure-stored logs before generating concise summaries.
+
 
 ## Impact
 
@@ -212,12 +233,6 @@ For a mid-sized organization handles roughly **1,000 alerts per day**, almost **
 
 - Is the solution an agent built with either the corresponding programming language?:->  Kasper is built using a language like Python and js and leverages Azure AI Agents 
 - How well does the project showcase the programming language or Microsoft technology of its category? We use different microsoft technologies liek azure databricks, azure openai, azure cosmos db, azure vector search etc
-
-
-### Registration Check
-
-- [x] Each of my team members has filled out the registration form
-
 
 
 ## Code Structure
@@ -297,93 +312,57 @@ backend/
   - Azure Cosmos DB: Data persistence
   - Azure Vector Search: Runbook retrieval
 
-## Frontend
-
-The frontend is a React application built with TypeScript and Vite.
-
-### Setup and Running
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-The development server will start with auto-reloading and an instant preview.
-
-## Backend
-
-The backend is a Python application that integrates with Slack and PagerDuty.
-
-
-Create a `.env` file in the backend directory with the following variables:
-
-### Flow of Events
-
-The application follows a specific flow of events when processing messages and handling incidents:
-
-```
-Start
-  ↓
-Initialize Bot
-  ↓
-  ├── Load Slack Bot Token
-  ├── Load PagerDuty API Key
-  └── Initialize RunbookSearch
-  ↓
-Wait for Messages
-  ↓
-Extract Message Info
-  ↓
-  ├── Text
-  ├── Channel
-  └── Thread ID
-  ↓
-Is it a PagerDuty incident?
-      ↓
-      ├── Yes → Extract Incident ID
-      │      ↓
-      │      Call PagerDuty API to get incident details
-      │      ↓
-      │      ├── Success → Display Incident Details
-      │      └── Failure → Show Error
-            ↓
-            Perform log aggregation from different services
-             ↓
-            Summarize the logs
-             ↓
-            Search Runbooks
-            ↓
-            Check the risk of each command
-            ↓
-            Execute the command if it is of low risk. Else wait for human intervention
-            ↓
-            Check for followup actions to prevent the issue from happening again in future
-            ↓
-            Format and Send Response
-  ↓
-End
-```
-
+## Setup & Configuration
 
 ### Prerequisites
+- Node.js 18+
+- Python 3.11+
+- Azure account with required services
+- PagerDuty account
+- Slack workspace
 
-- Node.js and npm (for frontend)
-- Python 3.x (for backend)
-- Slack workspace with bot permissions
-- PagerDuty account and API key
+### Frontend Setup
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend Setup
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate  # or .venv\Scripts\activate on Windows
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+## Environment Variables
+
+### Required Variables
+```bash
+# Slack Configuration
+SLACK_BOT_TOKEN=your_slack_bot_token
+SLACK_APP_TOKEN=your_slack_app_token
+
+# PagerDuty Configuration
+PAGERDUTY_API_KEY=your_pagerduty_api_key
+PAGERDUTY_URL=your_pagerduty_url
+
+# Azure Configuration
+AZURE_DATABRICKS_ENDPOINT=your_databricks_endpoint
+AZURE_DATABRICKS_TOKEN=your_databricks_token
+AZURE_DATABRICKS_WAREHOUSE_ID=your_warehouse_id
+AZURE_COSMO_DB=your_cosmos_db_connection_string
+MONGO_DB_NAME=your_database_name
+
+# Application Settings
+COMMAND_TIMEOUT=300
+```
 
 
 
+### Registration Check
 
+- [x] Each of my team members has filled out the registration form
 
-Kasper: Turning IT firefighting into intelligent command !
