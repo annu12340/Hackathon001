@@ -23,10 +23,10 @@ class SlackBot:
             text = event.get("text", "")
             thread_ts = event.get("thread_ts", event.get("ts"))
             # Check if this is a PagerDuty alert in Slack
-            # if config.PAGERDUTY_URL in text:
-            #     print("PagerDuty alert detected. The text is",text)
-            #     await self.handle_alert(text, thread_ts, say)
-            await self.incident_manager.handle_alert(text, thread_ts, say)
+            if config.PAGERDUTY_URL in text:
+                print("PagerDuty alert detected. The text is",text)
+                await self.handle_alert(text, thread_ts, say)
+
         
         @self.app.event("app_mention")
         async def handle_app_mention(event, say):

@@ -4,11 +4,11 @@ import os
 class AzureOpenAIClient:
     def __init__(self):
         self.api_version = "2023-07-01-preview"
-        # self.client = AzureOpenAI(
-        #     api_version=self.api_version,
-        #     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-        #     api_key=os.getenv("AZURE_OPENAI_API_KEY")
-        # )
+        self.client = AzureOpenAI(
+            api_version=self.api_version,
+            azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
+            api_key=os.getenv("AZURE_OPENAI_API_KEY")
+        )
         self.deployment = os.getenv("AZURE_OPENAI_DEPLOYMENxT")
 
     def summarize_pagerduty_alert(self, incident):
@@ -35,26 +35,16 @@ class AzureOpenAIClient:
             **Output Report Format:**
             Return the output in a json of 1 level, without any nested structure
         """
-        # full_prompt = PAGERDUTY_INCIDENT_SUMMARY_PROMPT + "\nIncident JSON:\n" + str(incident)
+        full_prompt = PAGERDUTY_INCIDENT_SUMMARY_PROMPT + "\nIncident JSON:\n" + str(incident)
         
-        # completion = self.client.chat.completions.create(
-        #     model=self.deployment,
-        #     messages=[
-        #         {"role": "system", "content": "You are a helpful assistant."},
-        #         {"role": "user", "content": full_prompt}
-        #     ],
-        #     temperature=0.2,
-        #     max_tokens=512
-        # )
+        completion = self.client.chat.completions.create(
+            model=self.deployment,
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": full_prompt}
+            ],
+            temperature=0.2,
+            max_tokens=512
+        )
 
-        # return completion.choices[0].message.content
-        return """Status: Acknowledged
-Urgency: High
-Title: Unable to write to temporary directory
-Time (UTC): 2025-04-27 04:35:54
-Summary of the Issue: The system encountered an issue where it was unable to write to a temporary directory, which may indicate a permissions issue or lack of available space.
-Environment/Cluster: Production (inferred based on urgency)
-Host/Node Name: Not specified
-Error Type: Filesystem access issue (possible permissions or disk space)
-Impacted Component: Temporary directory
-Time: N/A"""
+        return completion.choices[0].message.content

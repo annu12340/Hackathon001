@@ -87,57 +87,39 @@ class IncidentManager:
             await self.update_status(channel, message_ts, steps_done=1, 
                                        current_step="Getting pagerduty alert info", 
                                        thread_ts=thread_ts)
-            incident_id = "Q3TAMBYDY6HQI4"  # This should be extracted from text
+            incident_id = self.extract_incident_id(text)
             if incident_id:
                 logger.info(f"Found PagerDuty incident ID: {incident_id}")
-                # incident_dic = self.pd_client.get_incident(incident_id)
+                incident_dic = self.pd_client.get_incident(incident_id)
 
-            # if incident_dic:
-            #     await self.update_status(channel, message_ts, steps_done=2, 
-            #                        current_step="Analyzing alert", 
-            #                        thread_ts=thread_ts)
-            #     summary = self.azure_openai.summarize_pagerduty_alert(incident_dic)
-            #     summarized_pd_alert = self.pd_client.format_incident_details(summary)
-            #     print("detailed message is", summarized_pd_alert)
-            # else:
-            #     return
-            summarized_pd_alert = {
-    "Status": "Acknowledged",
-    "Urgency": "High",
-    "Title": "Unable to write to temporary directory",
-    "Time_UTC": "2025-04-27 04:35:54",
-    "Summary": "The system encountered an issue where it was unable to write to a temporary directory, which may indicate a permissions issue or lack of available space.",
-    "Environment_Cluster": "Production (inferred based on urgency)",
-    "Host_Node_Name": "Not specified",
-    "Error_Type": "Filesystem access issue (possible permissions or disk space)",
-    "Impacted_Component": "Temporary directory",
-    "Reported_Time": "N/A"
-}
+            if incident_dic:
+                await self.update_status(channel, message_ts, steps_done=2, 
+                                   current_step="Analyzing alert", 
+                                   thread_ts=thread_ts)
+                summary = self.azure_openai.summarize_pagerduty_alert(incident_dic)
+                summarized_pd_alert = self.pd_client.format_incident_details(summary)
+                print("detailed message is", summarized_pd_alert)
+            else:
+                return
 
-            # await self.update_status(channel, message_ts, steps_done=3, 
-            #                        current_step="Fetching the appropriate logs", 
-            #                        thread_ts=thread_ts)
-            # log_result=self.databricks_client.get_and_analyze_logs(cluster,node_id,summary.get("platform"))
-            # await asyncio.sleep(2)
+            await self.update_status(channel, message_ts, steps_done=3, 
+                                   current_step="Fetching the appropriate logs", 
+                                   thread_ts=thread_ts)
+            log_result=self.databricks_client.get_and_analyze_logs(cluster,node_id,summary.get("platform"))
+            await asyncio.sleep(2)
             
-            # await self.update_status(channel, message_ts, steps_done=4, 
-            #                        current_step="Analyzing root cause", 
-            #                        thread_ts=thread_ts)
+            await self.update_status(channel, message_ts, steps_done=4, 
+                                   current_step="Analyzing root cause", 
+                                   thread_ts=thread_ts)
             cluster="lima-rancher-desktop"
             node_id = "lima-rancher-desktop"
             incident_dic={}
-            triage_steps={
-  "summary": "The system is unable to write to a temporary directory, which may indicate a permissions issue or lack of available space. Check the permissions of the temporary directory and ensure that there is sufficient available space.",
-  "actions": [
-    {"command":"df -h", "risk":"low"},
-    {"command":"ls -ld /tmp", "risk":"high"},
-  ]
-}
-            # await self.update_status(channel, message_ts, steps_done=5, 
-            #                        current_step="Getting the remediation steps", 
-            #                        thread_ts=thread_ts)
-            # triage_steps = self.databricks_client.get_triage_steps(cluster,node_id,summarized_pd_alert,log_result)
-            # await asyncio.sleep(2)
+
+            await self.update_status(channel, message_ts, steps_done=5, 
+                                   current_step="Getting the remediation steps", 
+                                   thread_ts=thread_ts)
+            triage_steps = self.databricks_client.get_triage_steps(cluster,node_id,summarized_pd_alert,log_result)
+            await asyncio.sleep(2)
 
             await self.update_status(channel, message_ts, steps_done=6, 
                                    current_step="Running diagnostics", 
