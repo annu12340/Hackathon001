@@ -12,17 +12,20 @@ Kasper is an AI-powered incident management system that automates and streamline
   - [Tech Stack](#tech-stack)
   - [Flow of Events](#flow-of-events)
   - [AI Agents](#ai-agents)
+  - [Why Azure Databricks](#why-azure-databricks)
 - [📊 Project Details](#project-details)
   - [Submission Details](#submission-details)
-  - [Repository](#repository)
-  - [Team](#team)
-  - [Demo](#demo)
-- [📈 Impact & Benefits](#impact--benefits)
+  - [Language & Framework](#language--framework)
+  - [Project Repository URL](#project-repository-url)
+  - [Project Video](#project-video)
+  - [Deployed Endpoint](#deployed-endpoint)
+  - [Team Members](#team-members)
+- [📈 Impact & Benefits](#impact)
   - [Cost Savings](#cost-savings)
   - [Efficiency Gains](#efficiency-gains)
 - [🎯 Judging Criteria](#how-kasper-fits-the-judging-criteria)
   - [Innovation](#innovation)
-  - [Impact](#impact)
+  - [Impact](#impact-1)
   - [Usability](#usability)
   - [Solution Quality](#solution-quality)
   - [Hackathon Alignment](#alignment-with-hackathon-category)
@@ -35,6 +38,7 @@ Kasper is an AI-powered incident management system that automates and streamline
   - [Prerequisites](#prerequisites)
   - [Environment Setup](#environment-setup)
   - [Environment Variables](#environment-variables)
+  - [Registration Check](#registration-check)
 
 ### Submission details
 #### Language & Framework
@@ -241,6 +245,16 @@ For a mid-sized organization handles roughly **1,000 alerts per day**, almost **
 - Is the solution an agent built with either the corresponding programming language?:->  Kasper is built using a language like Python and js and leverages Azure AI Agents 
 - How well does the project showcase the programming language or Microsoft technology of its category? We use different microsoft technologies liek azure databricks, azure openai, azure cosmos db, azure vector search etc
 
+### Screenshots
+![img1](https://media-hosting.imagekit.io/ce87e20e64204fbf/aa.png?Expires=1840605705&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XlyzCDxKl1NEEnRvIDnw-Y6-2FebhYAvKoOpzPmqob2L2oK8zLKmnV2mp5DdSi2phIB8xoHcJV1TrfVto7hzinQwYI1TcPPA8zeW~NixhErOK1CP9hA~nj6UVhirZmpf7gmgCJE~MEndNvmPVfwBdI~aoOQN7V3A-0F~QZ4kgldVbrbUal7e0szGyx3GGyqtISXdYvZO5~nNp~ag~acq2ye4sarVW56n9FiumSaB5Ck6t6~KOeMRfKBY5I843UuoMcWIJfp9Q3Fbp-iwgglMnMKE5nPbEDw2QKiSfFdYe2PgTEiSAUL7fXX1b8wI1-5v8OskXyi1w8Qxe26yy-Xs9Q__)
+
+![img](https://media-hosting.imagekit.io/5d93c8f2c24c4d95/1.png?Expires=1840605642&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XDwG6B7re4dt2ai7DCm1pgdurxO-8AIW~tcpXdkd~VPj43NcNqjlKnln-d41GHEXkocfR1fJmRvL7cQFnsW0ouzBlr3ld-n5rw8Yd70cadplB1BY~mVGT1Lc140fFPy86Oi8rI8NvmTYEflnuIr0lu5ti0aHOvH41yhGD7kOCOO90nIZZxj5yuiSzX27WCqvJ1OeQjeY-AY0RcgwIwV21qLgkvzzIFwguyVNXT819gAMfcBo5K-D2eGbY5LmZBxXtRp94aC4jTzWsTXozoCBI8rZvEXc7OAMrznnlmPHoQ9R~aMBalXM95v3E04Ih4qxzZTbMN85BOIiFu8axiJgVA__)
+
+![img](https://media-hosting.imagekit.io/8e00ba0549b84c2d/1.5.png?Expires=1840605644&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=UXg4mUzChZrM3TfaX3v1RogGcMbB-CjIsv5iZl6qjWiK4pp22kSW8IsbAf-4IdvM5BPfx3W8fFZ4yZvOr8u71LpIzYtPMSAkp4KAd5mnjnVi7GN8R-L5PfMLJSdUXS1JtsqnTs9ZowMawEOrKkQbz-BkiuYHrtylg8QQqRqf6s6Q9dhn9aSxfzEWqoMPPYlK51XoqZLwuVCa2QX8xos8EZd2tipWMoB1rW5g~o47OI19OzJfRXYhKvfTAliH2rojAYrxgGYjUXYB7D2ZjODcbboSTfkn3kyHocfQWjDsIuCIpniTuOwrOqfXeDQgbjX3JkQQe-XQ81rOSUlu0Xntyw__)
+
+![img](https://media-hosting.imagekit.io/bb673c7c7b25482c/4.png?Expires=1840605647&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=ueS-Jt2zmhhKeWiSFX7wiGaLq828ddGDwStk4PMZ8S5F03nSe4Lvrsws1UtJHzc4V2bMXjkh91Lri~gkuz4nVXr~IOySE3s4CFbehSB4Os8YyzslwC9VmUaW137EiELnBetJEWxsZDOJKKXtniORJT8gsEavgf~ScPQYOs6xs1zER0rwwpzI0E2N~rO5ipBLZ9ajOJtbaHzP6jaHDH2N4MfoDkNiiA0Eo-3Hmx-jskfaX17S0LpFRMfOorEJSrXPhcb48LDMBx~RVQOAeit3iEaElzgofJG6U~w1X66r-4uoZB~-O2OAnftt7NKdifQDZnhXgCI0xFGiUBhE9AWh7g__)
+
+![img](https://media-hosting.imagekit.io/fd868148719d482f/2.png?Expires=1840605857&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=odU1IVDAmdpuWeAAeo2CwuAbOs~TQU4TxT-1Hjf036pHAahWQtfcobnQ7Y5EcwoUW3e4RT9aknHxkCYPx8-U7Uc9Qx6cRlUf8EGjpcZ5TwTIezc6naLyRU6xqFzPG-3R2B-b1ImjVkjTv59vv55pX8y3q428fVmy8-4VAMpvDy~JIfQ3zNLSFPp8uHoy8NsyEqZzS1draSV4dNHqtcy4fcG4WyEpH01WR2AWHQxjgmAy5A92lvbqrL1qJLRieV2H6F35mlNFqj-7-lHwajGm~Sh5hXVY2dNepzjJ-F-RWJNltSaiMZSRESyxPDWaeFE4X8Ni6HMbU-t8vrCedz114Q__)
 
 ## Code Structure
 
