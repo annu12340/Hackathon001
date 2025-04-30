@@ -1,35 +1,58 @@
-
 import React, { useState } from 'react';
 import { X, Send } from 'lucide-react';
+import axios from 'axios';
 
 interface ChatDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+interface Message {
+  text: string;
+  isUser: boolean;
+}
+
 const ChatDrawer = ({ isOpen, onClose }: ChatDrawerProps) => {
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { text: 'Hi there! How can I help you with your Node.js application today?', isUser: false },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!message.trim()) return;
     
     // Add user message
     setMessages(prev => [...prev, { text: message, isUser: true }]);
     setMessage('');
+    setIsLoading(true);
     
-    // Simulate response (in a real app, this would be an API call)
-    setTimeout(() => {
+    try {
+      // Make API call to backend
+      const response = await axios.post('/api/chat/query', {
+        message: message
+      });
+
+      // Add response to messages
       setMessages(prev => [
         ...prev, 
         { 
-          text: "I'm analyzing your recent Node.js metrics. Is there something specific you'd like help with?", 
+          text: response.data.data || "I've processed your query. How else can I help?", 
           isUser: false 
         }
       ]);
-    }, 1000);
+    } catch (error) {
+      // Add error message
+      setMessages(prev => [
+        ...prev, 
+        { 
+          text: "Sorry, I encountered an error processing your query. Please try again.", 
+          isUser: false 
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -60,6 +83,13 @@ const ChatDrawer = ({ isOpen, onClose }: ChatDrawerProps) => {
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className="flex justify-start">
+            <div className="p-3 rounded-xl bg-gray-100 text-gray-800 rounded-bl-none">
+              Processing...
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Input */}
@@ -72,10 +102,11 @@ const ChatDrawer = ({ isOpen, onClose }: ChatDrawerProps) => {
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Type your message..."
             className="flex-1 p-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={isLoading}
           />
           <button 
             onClick={handleSend} 
-            disabled={!message.trim()}
+            disabled={!message.trim() || isLoading}
             className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             <Send size={18} />

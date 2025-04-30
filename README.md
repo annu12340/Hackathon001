@@ -1,0 +1,389 @@
+# 🚀  Kasper: The AI Incident Commander 
+
+## Table of Contents
+- [Inspiration](#inspiration-)
+- [Language & Framework](#language--framework)
+- [Project Repository](#project-repository-url)
+- [Project Video](#project-video)
+- [Deployed Endpoint](#deployed-endpoint)
+- [Team Members](#team-members)
+- [Problem Statement](#problem-statement)
+- [Solution](#solution)
+- [Flow of Events](#flow-of-events)
+- [Technical Details](#technical-details)
+  - [Architectural Diagram](#architecutural-diagram)
+  - [Tech Stack](#tech-stack)
+  - [Flow Diagram](#flow-diagram)
+  - [AI Agents Interaction](#interaction-of-ai-agents-in-azure-databricks)
+- [Impact](#impact)
+- [Judging Criteria](#how-kasper-fits-the-judging-criteria)
+- [Code Structure](#code-structure)
+  - [Frontend Structure](#frontend-structure)
+  - [Backend Structure](#backend-structure)
+  - [Key Components](#key-components)
+- [Frontend](#frontend)
+  - [Setup and Running](#setup-and-running)
+- [Backend](#backend)
+  - [Environment Setup](#environment-setup)
+  - [Features](#features)
+  - [Flow of Events](#flow-of-events-1)
+  - [Detailed Flow Explanation](#detailed-flow-explanation)
+- [Development](#development)
+  - [Prerequisites](#prerequisites)
+
+## Inspiration 💡
+We've all been there. The dreaded 3 AM wake-up call, the heart-sinking realization of a system failure, the frantic scramble to find the signal in the deafening noise of alerts. It's a universal truth in IT: systems fail. The soul-crushing uncertainty of whether that page signifies a critical meltdown or just another false alarm, the hours lost manually piecing together fragmented data, the relentless pressure to restore services now – it's a recipe for burnout, costly downtime, and a constant state of reactive firefighting.
+
+Born from the crucible of this shared frustration, Kasper: The AI Incident Commander emerges as the autonomous driving system for your IT infrastructure. We're not just offering another monitoring tool; we're orchestrating a proactive, intelligent revolution in incident response, silencing the 3 AM symphony of system failures and turning reactive firefighting into calm, efficient command.
+
+
+### Language & Framework
+
+- [x] Python
+- [ ] C#
+- [ ] Java
+- [x] JavaScript/TypeScript
+- [ ] Microsoft Copilot Studio
+- [ ] Microsoft 365 Agents SDK
+- [x] Azure AI Agent Service
+
+### Project Repository URL
+
+https://github.com/annu12340/Hackathon001
+
+### Project Video
+
+[Demo video](https://youtu.be/8RMWyVQAzR8)
+
+### Deployed endpoint
+
+https://kasper-response.framer.website/
+
+### Team Members
+
+annu12340, armgp 
+
+## Problem Statement
+Modern IT systems, while incredibly powerful, are also incredibly complex, a labyrinth of interconnected services and dependencies. This complexity translates into a torrential flood of data, making it nearly impossible for human engineers to effectively manage incidents at scale. The problem is multifaceted, a hydra-headed challenge that demands a new approach:
+
+- Alert Fatigue: On-call engineers are bombarded with a relentless barrage of alerts, many of which are false positives, low-priority notifications, or simply noise. This constant bombardment leads to alert fatigue
+
+- Context Scarcity: Alerts often provide minimal context, leaving responders to manually piece together the puzzle from disparate systems, like detectives at a crime scene with only a handful of clues. This "context gap" wastes valuable time, delays effective action, and increases the likelihood of misdiagnosis.
+
+- Manual Diagnostics: Troubleshooting remains a largely manual process, involving tedious tasks like sifting through mountains of log data, performing repetitive system checks, and frantically searching through outdated and often inaccurate runbooks. This is time-consuming, error-prone, and utterly unsustainable in the face of modern IT complexity.
+
+- Delayed Resolution: The combined effect of alert fatigue, context scarcity, and manual diagnostics results in prolonged incident resolution times, increased downtime, and significant business disruption. Every minute of downtime translates to lost revenue, lost productivity, and damaged reputation.
+
+
+## Solution
+Kasper isn't just another monitoring tool; it's your AI-powered incident commander, automating and streamlining the entire incident lifecycle. By integrating seamlessly with alerting platforms like PagerDuty, communication hubs like Slack and the power of azure AI gents, Kasper provides a unified, context-rich, and actionable approach to incident management. 
+
+At its core, Kasper harnesses the power of Large Language Models (LLMs) to transcend mere alerting. It understands the incident's narrative, diagnoses the underlying problem with machine precision, prescribes the optimal solution – significantly reducing MTTR and paving the way for truly resilient systems. 
+
+## Flow of events
+
+![Alt text](https://i.ibb.co/k2LtYHXR/Flow-of-events-visual-selection.png)
+
+1. PagerDuty Alert Trigger: An incident occurs, triggering an alert in PagerDuty.
+
+2. Slack Notification: PagerDuty sends a notification about the new alert to a designated Slack channel.
+
+3. Kasper Bot Detection: Kasper's bot, constantly monitoring the specified Slack channel, detects the new PagerDuty alert notification.
+
+4. Initial Alert Summarization (Azure OpenAI): Upon detection, Kasper extracts the pd id and get the entire PD description. It sends it to Azure OpenAI for a concise summary of the PagerDuty alert details.
+
+5. Relevant Log Retrieval: Based on the incident details (e.g., affected service, hostname), Kasper automatically identifies and retrieves the relevant logs from the involved systems.
+
+6. Large Log Summarization (Azure Databricks):  Kasper utilizes Azure Databricks to efficiently process and summarize the key information and error patterns within the logs.
+
+7. Runbook Retrieval (Vector Database): With the summarized alert and log context, Kasper queries a vector database. This database stores embeddings of runbooks, allowing Kasper to perform a semantic search and retrieve the most relevant remediation steps based on the contextual understanding of the incident. There are various tools deployed in the azure databricks to optimize this search
+
+8. Risk Assessment: Kasper assesses the risk level associated with the retrieved remediation steps (e.g., commands like kubectl get pods is low risk, but commands like rm -rf . is high risk).
+
+9. Automated Execution (Low Risk): If the assessed risk of the recommended command is low, Kasper automatically executes the remediation steps on the affected system.
+
+10. Human Approval Request (High Risk): If the assessed risk is high, Kasper posts the summarized incident details, the proposed remediation steps, and the associated risk level to the Slack channel, awaiting explicit approval from an on-call engineer. Once there is enough confidence, this step also can be automated
+
+11. Execution Upon Approval: Once an engineer reviews and approves the remediation steps in Slack, Kasper proceeds to execute the commands on the affected system.
+
+12. Confirmation and Follow-up: After attempting remediation, Kasper posts a confirmation message in Slack, detailing the actions taken and the outcome. It may also suggest potential follow-up actions  based on the incident.
+
+## Technical details
+
+### Architecutural diagram
+
+![Text](https://media-hosting.imagekit.io/445649bdad484c49/diagram-export-30-04-2025-08_46_52.png?Expires=1840600831&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=D~qhF8vNgoXHnd0OEEnhv-O-sfd7eHQ2RH3uiGvIgFFI1dGB82QVwcqahYw9gT12BJnaeWvpd99AeRtSuXCtXUOrvK02vpcG0nU-SMsh3mGuPGgm2V5grSO0kPLMlQi-v5kfNFlY51hOGAnmIi9cXq8MZqlF9iRTCDcbfEzfPPwXkI9Nv4vxqP6ZfK--r8KHaiwsypkt85~QFhqkWD2NK~rdfkNTFiad9bfma~i7-bjW8WisA-SgQFrpgQf3P5KuDZQZPefF1HMV2766SWlc9B5geaN7FHy0s~GWH1vc~XGVVMW-9hR1SIc-1M0VttuuZ5Ri5pwvJsClzFt2gUQCjQ__)
+
+### Tech stack
+- Frontend:
+    - React
+    - TypeScript
+    - Vite 
+
+- Backend:
+    - Python
+
+- Microsoft Azure Services:
+    - Azure AI Agents using azure Databricks
+    - Azure OpenAI
+    - Azure Cosmos DB
+    - Azure Vector Search
+
+- Integration Services:
+    - Slack (for communication)
+    - PagerDuty (for incident management)
+
+### Flow diagram
+![text](https://media-hosting.imagekit.io/2c23e4a6cadd4fd0/diagram-export-30-04-2025-08_34_01.png?Expires=1840600837&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=qrZkLpL6R0BlBBM6VvdVknJc6gfQvZXd7PIutq50r5iof8Qkus5icQwF8enUtvgLVFR8ZL~wB3uwSWJ1GIiSohqYyzLQWMyXBsI-13XXhGw1daNeE8D4gi3iNCbriPRGwsAyfTl9xXkVdk5rV83x0jW57KobxeeVF7l6QXMw3EDXaPHur12dm7LzCyCMHV20dDC4afy-4UDAf-PmA9VUAdZTtgUDID0QrvgqAUsc-aoRVjj~ZCDaYl3ql~7aItmjCOQdwcs60DSM3ipL4FTcDCvG3av22h~w1B3L4iiPh9uml0rdx9cXlrWt1A5MPHRqUiIBVZnush5SJqmyXcGTQg__)
+
+
+### Interaction of AI agents in azure databricks
+
+![test](https://media-hosting.imagekit.io/11db7186ca1c4a70/kasper.jpeg?Expires=1840600767&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BGJWOBzqTRSiZbErf7KHndp7pN0~oZVWRYhERQBxdb5nbdiYQX54hID~8IZWGpkIfP~Tm03uw7lLvZDdjlvcOUANaIeXCt6NBiC~1JoeCGFatkqQGFxa326VZD2YPU-4nJ71hQ9okO-yIqWVVvM7e3RzO~dzLFjMh9-4kKXvFofxTQDwIz7naHiEjL2qU1jvnYQ3O0eH4CaQvhtuvub-z8IHFL5n7se4~XOALoNOM~C65X0rIRhiBvNwKnZQcz~x2lAkj0q6mgtIxpMvzhDSDupY7OQPBYkEwn5-2-YL6bZPFt7Dn3W9qtr39rwOjC4rXI3VNL3XYO89b6qJu0UagQ__)
+
+## Impact
+
+By automating the resolution of routine alerts, **Kasper significantly reduces the manual workload on on-call teams**.
+
+For a mid-sized organization handles roughly **1,000 alerts per day**, almost **60% is automatable** — that's **600 incidents handled without human intervention** daily.
+
+- ⏱️ Time Saved — `Equivalent to 3.5 Full-Time Engineers`
+
+    - Each auto-resolved alert saves about **20 minutes** of engineering effort.
+
+    - **Daily time savings:**: 600 alerts × 20 minutes = **12,000 minutes** = **200 hours/day**
+    - **Monthly savings (30 days):**: 200 hours/day × 30 = **6,000 hours/month**
+
+
+- 💰 People Cost Savings — `Up to $5.4M/Year`
+
+  - **At $50/hour for an engineer:**
+    - 6,000 hours × $50 = **$300,000/month** = **$3.6M/year**
+  
+  - **At $75/hour (fully loaded rate):**
+    - 6,000 hours × $75 = **$450,000/month** = **$5.4M/year**
+
+- ⚙️ Infra Savings — `Up to $216,000/year`
+
+    Unresolved incidents often keep expensive resources (like compute-heavy workloads) running unnecessarily, burning idle CPU/GPU cycles.
+
+    - **Average cost of idle infra per alert (CPU, GPU, storage, network):** ~$1–3 per alert/hour
+    - **Assume 300 of the 600 auto-resolved alerts/day involve infra components left running**
+    - **Estimate: $2/hour/alert × 1-hour delay**
+
+        - **Daily compute savings:**:  300 alerts × $2 = **$600/day**
+        - **Monthly compute savings:**: $600 × 30 = **$18,000/month** = **$216,000/year**
+
+### 📈 Combined Annual Efficiency Gains
+
+**Kasper can generate over `$5.6 million` in annual savings**, combining:
+- Engineering time savings
+- Reduced operational costs
+- Lower infrastructure waste
+
+## How Kasper fits the judging criteria
+
+1. Innovation 
+- Interesting Premise:->  Kasper tackles a significant and common pain point in IT operations – inefficient incident response. The idea of an AI-powered "incident commander" that goes beyond basic alerting offers a fresh perspective.
+- Creative Implementation:->  Kasper's proposed use of Azure AI Agents and Large Language Models (LLMs) to understand incident narratives, diagnose root causes with precision, and even automate remediation demonstrates a creative application of AI technology. The integration with existing tools like PagerDuty and Slack to create a unified workflow further enhances this.
+- Engaging Demo:->  A well-executed demo showcasing Kasper's ability to ingest alerts, provide insightful analysis, and automate or guide remediation will effectively highlight its innovative capabilities.
+
+2. Impact 
+- Would we use the project ourselves?:->  The potential for Kasper to significantly reduce manual workload, minimize downtime, and improve the efficiency of incident response makes it highly valuable for various organizations dealing with IT incidents. The quantifiable benefits (time savings, cost savings, infrastructure savings) strongly support its potential impact.
+- Is the value/purpose of the project evident?:->  Kasper's purpose – to streamline and automate incident response using AI – is clearly articulated. The problem statement effectively highlights the challenges it aims to solve, and the solution directly addresses these issues with tangible benefits.
+
+3. Usability 
+- Does the project address a real-world scenario? How practical is the solution? :-> Kasper directly addresses the very real and common challenges faced by IT teams in managing incidents. By offering an automated and intelligent approach, it provides a practical solution to alert fatigue, context scarcity, and manual diagnostics.
+- Does the project include sophisticated features such as Human-in-the-Loop?:->  Kasper incorporates a crucial human-in-the-loop mechanism for high-risk actions, ensuring that critical decisions are not fully automated and allowing for human oversight and intervention.
+- Does the project incorporate Responsible AI practices? Kasper follows the 6 main pillars for responsible AI
+    - Transparency: We aim for Kasper to explain its reasoning for diagnoses and recommendations clearly. Each steps has proper logging
+    - Accountability:  Critical actions require human approval, preventing unchecked automation.
+    - Reliability & Safety: Human oversight for critical actions, rigorous testing.
+    - Security & Privacy: Incident data handling will adhere to security best practices and respect privacy.
+    - Inclusiveness: Designed to aid all engineers with clear explanations.
+    - Fairness (Future Consideration): We will actively consider and address potential biases in the data Kasper learns from as the system evolves.
+
+4. Solution Quality 
+
+- How complete is the project repository, README, and codebase?:->  We have a well-structured repository with clear documentation (README) explaining setup, usage, and architecture, along with a well-commented and robust codebase, will be crucial for demonstrating solution quality.
+- Is there substantial technical implementation: We have a strong technical implementation. Details here
+
+5. Alignment with hackathon category 
+
+- Is the solution an agent built with either the corresponding programming language?:->  Kasper is built using a language like Python and js and leverages Azure AI Agents 
+- How well does the project showcase the programming language or Microsoft technology of its category? We use different microsoft technologies liek azure databricks, azure openai, azure cosmos db, azure vector search etc
+
+
+### Registration Check
+
+- [x] Each of my team members has filled out the registration form
+
+
+
+## Code Structure
+
+### Frontend Structure
+```
+frontend/
+├── src/
+│   ├── components/          # Reusable React components
+│   │   ├── LogsPanel/      # Log summary display component
+│   │   ├── IncidentCard/   # Incident display component
+│   │   └── RiskIndicator/  # Risk level visualization
+│   ├── pages/              # Main application pages
+│   │   ├── Dashboard/      # Main dashboard view
+│   │   ├── Incidents/      # Incidents management view
+│   │   └── Settings/       # Configuration settings
+│   ├── services/           # API and external service integrations
+│   │   ├── api.ts         # API client configuration
+│   │   ├── slack.ts       # Slack integration
+│   │   └── pagerduty.ts   # PagerDuty integration
+│   ├── types/             # TypeScript type definitions
+│   ├── utils/             # Utility functions
+│   ├── App.tsx           # Main application component
+│   └── main.tsx          # Application entry point
+├── public/               # Static assets
+├── package.json         # Dependencies and scripts
+└── vite.config.ts       # Vite configuration
+```
+
+### Backend Structure
+```
+backend/
+├── src/
+│   ├── agents/           # Azure AI Agents implementation
+│   │   ├── incident_commander.py  # Main incident handling agent
+│   │   ├── log_analyzer.py       # Log analysis agent
+│   │   └── risk_assessor.py      # Risk assessment agent
+│   ├── integrations/     # External service integrations
+│   │   ├── slack/       # Slack bot implementation
+│   │   ├── pagerduty/   # PagerDuty API integration
+│   │   └── azure/       # Azure services integration
+│   ├── models/          # Data models and schemas
+│   ├── services/        # Core business logic
+│   │   ├── log_service.py       # Log aggregation service
+│   │   ├── runbook_service.py   # Runbook management
+│   │   └── risk_service.py      # Risk assessment service
+│   ├── utils/           # Utility functions
+│   └── main.py          # Application entry point
+├── tests/               # Test suite
+├── requirements.txt     # Python dependencies
+└── .env.example        # Environment variables template
+```
+
+### Key Components
+
+#### Frontend Components
+- **LogsPanel**: Displays aggregated logs with filtering and search capabilities
+- **IncidentCard**: Shows incident details and status
+- **RiskIndicator**: Visual representation of risk levels
+- **Dashboard**: Main view with incident overview and metrics
+- **Settings**: Configuration interface for integrations
+
+#### Backend Services
+- **Incident Commander**: Main agent orchestrating incident response
+- **Log Analyzer**: Processes and summarizes log data
+- **Risk Assessor**: Evaluates potential impact of actions
+- **Log Service**: Handles log aggregation and analysis
+- **Runbook Service**: Manages runbook storage and retrieval
+- **Risk Service**: Implements risk assessment logic
+
+#### Integration Points
+- **Slack**: Real-time communication and notifications
+- **PagerDuty**: Incident detection and management
+- **Azure Services**: AI capabilities and data storage
+  - Azure OpenAI: Natural language processing
+  - Azure Databricks: Log analysis and processing
+  - Azure Cosmos DB: Data persistence
+  - Azure Vector Search: Runbook retrieval
+
+## Frontend
+
+The frontend is a React application built with TypeScript and Vite.
+
+### Setup and Running
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+The development server will start with auto-reloading and an instant preview.
+
+## Backend
+
+The backend is a Python application that integrates with Slack and PagerDuty.
+
+
+Create a `.env` file in the backend directory with the following variables:
+
+### Flow of Events
+
+The application follows a specific flow of events when processing messages and handling incidents:
+
+```
+Start
+  ↓
+Initialize Bot
+  ↓
+  ├── Load Slack Bot Token
+  ├── Load PagerDuty API Key
+  └── Initialize RunbookSearch
+  ↓
+Wait for Messages
+  ↓
+Extract Message Info
+  ↓
+  ├── Text
+  ├── Channel
+  └── Thread ID
+  ↓
+Is it a PagerDuty incident?
+      ↓
+      ├── Yes → Extract Incident ID
+      │      ↓
+      │      Call PagerDuty API to get incident details
+      │      ↓
+      │      ├── Success → Display Incident Details
+      │      └── Failure → Show Error
+            ↓
+            Perform log aggregation from different services
+             ↓
+            Summarize the logs
+             ↓
+            Search Runbooks
+            ↓
+            Check the risk of each command
+            ↓
+            Execute the command if it is of low risk. Else wait for human intervention
+            ↓
+            Check for followup actions to prevent the issue from happening again in future
+            ↓
+            Format and Send Response
+  ↓
+End
+```
+
+
+### Prerequisites
+
+- Node.js and npm (for frontend)
+- Python 3.x (for backend)
+- Slack workspace with bot permissions
+- PagerDuty account and API key
+
+
+
+
+
+Kasper: Turning IT firefighting into intelligent command !
